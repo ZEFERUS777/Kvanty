@@ -1,0 +1,76 @@
+<!-- templates/group.html -->
+{% extends "base.html" %}
+
+{% block title %}
+{{ group.group_name }} - Технопарк
+{% endblock %}
+
+{% block styles %}
+<style>
+.student-card {
+    transition: transform 0.2s;
+}
+.student-card:hover {
+    transform: translateY(-5px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Вывод флеш-сообщений -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Основной контент -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 fw-bold mb-3">{{ group.group_name }}</h1>
+            <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-chalkboard-teacher me-2"></i>
+                <span>Преподаватель: {{ group.tuitor }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Студенты</h5>
+                    <button class="btn btn-light btn-sm" data-bs-target="#addStudentModal">
+                        <i class="fas fa-user-plus me-1"></i><a href="/grau/{{ group.id }}">Записаться</a>
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if group.Students %}
+                        <div class="row g-3">
+                            {% for student in group.Students.split(',') %}
+                                {% if student.strip() %}
+                                    <div class="col-md-6">
+                                        <div class="card student-card h-100">
+                                            <div class="card-body">
+                                                <h6 class="card-title mb-0">{{ student.strip() }}</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">В группе пока нет студентов</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
