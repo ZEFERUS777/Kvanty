@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% block title %}Добавление группы{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --glass: rgba(255, 255, 255, 0.95);
+        --shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    }
+
+    body {
+        background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
+        min-height: 100vh;
+    }
+
+    .form-container {
+        max-width: 600px;
+        margin: 4rem auto;
+        padding: 2.5rem;
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        border-radius: 1.5rem;
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        transform: translateY(20px);
+        opacity: 0;
+        animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes slideUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-title {
+        color: #1f2937;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 700;
+        font-size: 2.5rem;
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .form-title:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 2px;
+    }
+
+    .form-group {
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .form-label {
+        position: absolute;
+        left: 1rem;
+        top: 1.1rem;
+        color: #6b7280;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        background: var(--glass);
+        padding: 0 0.5rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1.2rem 1.5rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        background: transparent;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .form-control:focus ~ .form-label,
+    .form-control:not(:placeholder-shown) ~ .form-label {
+        top: -0.6rem;
+        left: 0.8rem;
+        font-size: 0.85rem;
+        color: var(--primary);
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 1.2rem;
+        background: linear-gradient(45deg, var(--primary), #818cf8);
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: 2px solid transparent;
+    }
+
+    .submit-btn:hover {
+        background: linear-gradient(45deg, var(--primary-hover), #6366f1);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+    }
+
+    .submit-btn.loading {
+        pointer-events: none;
+    }
+
+    .submit-btn.loading:after {
+        content: "";
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        top: 50%;
+        left: 50%;
+        margin: -12px 0 0 -12px;
+        border: 3px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            margin: 2rem 1rem;
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <form method="POST" id="groupForm">
+        <h1 class="form-title">Добавить группу</h1>
+        
+        <div class="form-group">
+            {{ form.group_name(class="form-control", placeholder=" ")}}
+            {{ form.group_name.label(class="form-label") }}
+            <i class="fas fa-users input-icon"></i>
+        </div>
+
+        <div class="form-group">
+            {{ form.tuitor_name(class="form-control", placeholder=" ")}}
+            {{ form.tuitor_name.label(class="form-label") }}
+            <i class="fas fa-chalkboard-teacher input-icon"></i>
+        </div>
+
+        {{ form.submit(class="submit-btn") }}
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Плавное появление формы
+        setTimeout(() => document.querySelector('.form-container').style.opacity = 1, 100);
+
+        // Анимация отправки формы
+        const form = document.getElementById('groupForm');
+        const submitBtn = document.querySelector('.submit-btn');
+        
+        form.addEventListener('submit', function(e) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            submitBtn.innerHTML = '';
+        });
+
+        // Параллакс эффект для фона
+        document.body.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            document.querySelector('.form-container').style.transform = 
+                `translateY(0) rotateX(${y}deg) rotateY(${x}deg)`;
+        });
+    });
+</script>
+{% endblock %}

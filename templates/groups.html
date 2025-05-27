@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Группы{% endblock %}
+{% block content %}
+<h1>Группы</h1>
+
+
+<div class="container text-center ">
+    <div class="row row-cols-3">
+        {% for group in groups %}
+        <div class="col">
+            <div class="card">
+                <div class="card-title">
+                    <h2>{{ group.group_name }}</h2>
+                </div>
+                <div class="card-body">
+                    <h5>{{ group.tuitor }}</h5>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
