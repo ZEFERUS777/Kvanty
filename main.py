@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash, redirect, url_for
 from src.models import db, Groups
 from src.wtf_m import Add_Group_Form
 
@@ -32,6 +32,25 @@ def add_group():
         db.session.commit()
         return render_template("add_group.html", form=form)
     return render_template("add_group.html", form=form)
+
+
+# app.py (обновленный роут)
+@app.route("/group/<string:id>", methods=["GET", "POST"])
+def group(id):
+    group = Groups.query.get(int(id))
+    if request.method == "POST":
+        student_name = request.form.get("student_name")
+        # Разделение строки в список
+        students = group.Students.split(",") if group.Students else []
+        if student_name.strip() in students:
+            flash("Студент уже записан", "warning")
+            return redirect(url_for("group", id=id))
+        students.append(student_name.strip())
+        group.Students = ",".join(students)  # Объединение обратно в строку
+        db.session.commit()
+        flash("Вы записались", "success")
+    return render_template("group.html", group=group)
+    
 
 
 with app.app_context():

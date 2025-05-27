@@ -5,12 +5,13 @@ from sqlalchemy_serializer import SerializerMixin
 db = SQLAlchemy()
 
 
+# models.py (рекомендуемое обновление модели)
 class Groups(db.Model, SerializerMixin):
     __tablename__ = "groups"
     id = db.Column(db.Integer, primary_key=True)
     group_name = db.Column(db.String(128), nullable=False, unique=True)
     tuitor = db.Column(db.String(128), nullable=False)
-
+    Students = db.relationship('Students', backref='group', lazy=True)
 
 class Students(db.Model, SerializerMixin):
     __tablename__ = "students"
