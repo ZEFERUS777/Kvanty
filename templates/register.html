@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    .register-container {
+        max-width: 500px;
+        margin: 5% auto;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        background: white;
+        animation: fadeIn 0.8s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+    
+    .input-group-icon {
+        position: relative;
+    }
+    
+    .form-control-icon {
+        padding-left: 45px !important;
+    }
+    
+    .btn-register {
+        background: linear-gradient(45deg, #3a86ff, #6f42c1);
+        border: none;
+        transition: all 0.4s;
+        background-size: 200% auto;
+    }
+    
+    .btn-register:hover {
+        background-position: right center;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #6c757d;
+    }
+    
+    .error-message {
+        animation: shake 0.5s;
+        background: #ffebee;
+        border-left: 4px solid #f44336;
+    }
+    
+    @keyframes shake {
+        0%, 100% {transform: translateX(0);}
+        20%, 60% {transform: translateX(-5px);}
+        40%, 80% {transform: translateX(5px);}
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="register-container">
+        <h2 class="text-center mb-4">Создайте аккаунт <i class="fas fa-user-plus ms-2"></i></h2>
+        
+        {% if error %}
+        <div class="alert error-message p-3 mb-4">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-3 input-group-icon">
+                <i class="fas fa-user form-icon"></i>
+                {{ form.name(class="form-control form-control-lg form-control-icon", placeholder="Ваше имя") }}
+            </div>
+            
+            <div class="mb-3 input-group-icon">
+                <i class="fas fa-users form-icon"></i>
+                {{ form.surname(class="form-control form-control-lg form-control-icon", placeholder="Ваша фамилия") }}
+            </div>
+            
+            <div class="mb-3 input-group-icon">
+                <i class="fas fa-envelope form-icon"></i>
+                {{ form.email(class="form-control form-control-lg form-control-icon", placeholder="Email") }}
+            </div>
+            
+            <div class="mb-4 input-group-icon">
+                <i class="fas fa-lock form-icon"></i>
+                {{ form.password(class="form-control form-control-lg form-control-icon", id="password", placeholder="Пароль") }}
+                <i class="far fa-eye password-toggle" id="togglePassword"></i>
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg btn-register">
+                    Зарегистрироваться <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </div>
+        </form>
+        
+        <div class="text-center mt-4">
+            <p class="mb-0">Уже есть аккаунт? <a href="{{ url_for('login') }}" class="text-decoration-none fw-bold">Войти</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Анимация переключения видимости пароля
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordInput = document.getElementById('password');
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
+    
+    // Плавная анимация при загрузке
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.style.transform = 'scale(1.02)';
+                input.parentElement.style.transition = 'transform 0.3s';
+            });
+            
+            input.addEventListener('blur', () => {
+                input.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,11 +1,12 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 db = SQLAlchemy()
 
 
-# models.py (рекомендуемое обновление модели)
 class Groups(db.Model, SerializerMixin):
     __tablename__ = "groups"
     id = db.Column(db.Integer, primary_key=True)
@@ -19,3 +20,19 @@ class Students(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False)
     group_id = db.Column(db.Integer, db.ForeignKey("groups.id"))
+
+
+class Users(db.Model, UserMixin, SerializerMixin):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128), unique=True)
+    email = db.Column(db.String(128), unique=True)
+    password_hash = db.Column(db.String(128))
+    group_id = db.Column(db.Integer, db.ForeignKey("groups.id"))
+    rule = db.Column(db.Integer)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)

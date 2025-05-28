@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}Вход в систему{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --error: #e63946;
+        --success: #2a9d8f;
+    }
+    
+    .login-container {
+        max-width: 450px;
+        width: 100%;
+        margin: 0 auto;
+        animation: fadeIn 0.8s ease-out;
+        padding: 2rem 0;
+    }
+    
+    .login-card {
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        transform: translateY(0);
+        transition: transform 0.4s, box-shadow 0.4s;
+    }
+    
+    .login-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-header {
+        background: var(--primary);
+        color: white;
+        text-align: center;
+        padding: 25px 20px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to right,
+            transparent 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 100%
+        );
+        transform: rotate(30deg);
+        animation: shine 3s infinite;
+    }
+    
+    .card-body {
+        padding: 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+    
+    .form-control {
+        border: 2px solid #e1e5ee;
+        border-radius: 8px;
+        padding: 12px 15px 12px 45px;
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+    
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 12px;
+        color: #6c757d;
+        transition: color 0.3s;
+    }
+    
+    .form-control:focus + .input-icon {
+        color: var(--primary);
+    }
+    
+    .btn-login {
+        background: var(--primary);
+        border: none;
+        padding: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+        width: 100%;
+    }
+    
+    .btn-login:hover {
+        background: var(--secondary);
+        transform: translateY(-2px);
+    }
+    
+    .btn-login:active {
+        transform: translateY(1px);
+    }
+    
+    .error-message {
+        background: rgba(230, 57, 70, 0.1);
+        color: var(--error);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        animation: shake 0.5s, fadeIn 0.3s;
+        border-left: 4px solid var(--error);
+    }
+    
+    .error-message i {
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
+    
+    .footer-links {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .footer-links a {
+        color: var(--primary);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    
+    .footer-links a:hover {
+        color: var(--secondary);
+        text-decoration: underline;
+    }
+    
+    /* Анимации */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-8px); }
+        40%, 80% { transform: translateX(8px); }
+    }
+    
+    @keyframes shine {
+        0% { transform: rotate(30deg) translateX(-100%); }
+        100% { transform: rotate(30deg) translateX(100%); }
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 12px;
+        cursor: pointer;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="card-header">
+            <h2><i class="fas fa-lock me-2"></i>Авторизация</h2>
+        </div>
+        
+        <div class="card-body">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            <i class="fas {{ 'fa-exclamation-circle' if category == 'error' else 'fa-check-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% if error %}
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+            
+            <form method="POST" id="loginForm">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    <i class="fas fa-envelope input-icon"></i>
+                    {{ form.email(class="form-control", placeholder="Ваш email") }}
+                </div>
+                
+                <div class="form-group">
+                    <i class="fas fa-key input-icon"></i>
+                    {{ form.password(class="form-control", id="password", placeholder="Пароль") }}
+                    <span class="password-toggle" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                
+                <div class="form-group form-check">
+                    {{ form.remember(class="form-check-input") }}
+                    {{ form.remember.label(class="form-check-label") }}
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-login">
+                    <i class="fas fa-sign-in-alt me-2"></i>Войти
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.innerHTML = type === 'password' 
+                ? '<i class="fas fa-eye"></i>' 
+                : '<i class="fas fa-eye-slash"></i>';
+        });
+        
+        const form = document.getElementById('loginForm');
+        
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            clearFieldErrors();
+            
+            const email = form.email.value.trim();
+            const password = form.password.value.trim();
+            
+            if (!validateEmail(email)) {
+                showError(form.email, 'Введите корректный email');
+                isValid = false;
+            }
+            
+            if (password.length < 6) {
+                showError(form.password, 'Пароль должен быть не менее 6 символов');
+                isValid = false;
+            }
+            
+            if (!isValid) e.preventDefault();
+        });
+        
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        function showError(input, message) {
+            const formGroup = input.closest('.form-group');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'text-danger mt-2 small';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${message}`;
+            formGroup.appendChild(errorDiv);
+            
+            input.classList.add('is-invalid');
+        }
+        
+        function clearFieldErrors() {
+            document.querySelectorAll('.form-control.is-invalid').forEach(el => {
+                el.classList.remove('is-invalid');
+            });
+            
+            document.querySelectorAll('.form-group .text-danger').forEach(el => {
+                el.remove();
+            });
+        }
+        
+        // Автоматическое скрытие алертов через 5 секунд
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                new bootstrap.Alert(alert).close();
+            });
+        }, 5000);
+    });
+</script>
+{% endblock %}
