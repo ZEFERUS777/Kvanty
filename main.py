@@ -33,14 +33,19 @@ def groups():
 @app.route("/add_group", methods=["GET", "POST"])
 @login_required
 def add_group():
-    form = Add_Group_Form()
-    if request.method == "POST":
-        group = Groups(group_name=form.group_name.data,
-                       tuitor=form.tuitor_name.data)
-        db.session.add(group)
-        db.session.commit()
+    print(current_user.rule)
+    if current_user.rule == 1:
+        form = Add_Group_Form()
+        if request.method == "POST":
+            group = Groups(group_name=form.group_name.data,
+                        tuitor=form.tuitor_name.data)
+            db.session.add(group)
+            db.session.commit()
+            return render_template("add_group.html", form=form)
         return render_template("add_group.html", form=form)
-    return render_template("add_group.html", form=form)
+    else:
+        flash("У вас нет прав для добавления группы", "error")
+        return redirect(url_for("groups"))
 
 
 @app.route("/group/<string:id>", methods=["GET", "POST"])
