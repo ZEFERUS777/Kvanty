@@ -19,7 +19,15 @@ db.init_app(app)
 @app.route('/')
 @app.route("/index")
 def index():
-    return render_template("base.html")
+    # Для незарегистрированных пользователей
+    if not current_user.is_authenticated:
+        return render_template("base.html")
+    
+    # Для зарегистрированных пользователей
+    if current_user.rule == 1:
+        return render_template("base.html", rule="admin")
+    else:
+        return render_template("base.html")
 
 
 @app.route("/groups")
@@ -38,7 +46,7 @@ def add_group():
         form = Add_Group_Form()
         if request.method == "POST":
             group = Groups(group_name=form.group_name.data,
-                        tuitor=form.tuitor_name.data)
+                           tuitor=form.tuitor_name.data)
             db.session.add(group)
             db.session.commit()
             return render_template("add_group.html", form=form)
@@ -116,7 +124,7 @@ def login():
                 return redirect(url_for("index"))
             else:
                 return render_template("login.html", form=login_form,
-                                error="Неверный логин или пароль")
+                                       error="Неверный логин или пароль")
         except Exception as e:
             return render_template("login.html", form=login_form, error="Ошибка при входе")
     return render_template("login.html", form=login_form)

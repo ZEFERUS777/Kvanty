@@ -45,6 +45,11 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/faq">FAQ</a>
                         </li>
+                        {% if rule == "admin" %}
+                         <li class="nav-item">
+                            <a class="nav-link" href="/add_group">Добавить группу</a>
+                        </li>
+                        {% endif %}
                     </ul>
 
                     <div class="d-flex align-items-center gap-3">
