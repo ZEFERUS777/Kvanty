@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Назначить руководителя{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+        padding: 5px 10px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Назначить руководителя для группы "{{ group.name }}"</h4>
+                </div>
+                
+                <div class="card-body">
+                    <form method="post">
+
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Выберите преподавателя:</label>
+                            <select id="teacher-select" class="form-select" name="lead_id" required>
+                                <option value="" disabled selected>-- Выберите преподавателя --</option>
+                                {% for teacher in teachers %}
+                                <option value="{{ teacher.id }}">{{ teacher.full_name }} ({{ teacher.username }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-check"></i> Назначить руководителем
+                            </button>
+                            <a href="{{ url_for('groups') }}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Назад к группам
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- Подключение Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Инициализация Select2 с поиском
+        $('#teacher-select').select2({
+            placeholder: "Поиск преподавателя",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
+{% endblock %}

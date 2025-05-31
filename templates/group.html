@@ -49,6 +49,11 @@
                     <button class="btn btn-light btn-sm" data-bs-target="#addStudentModal">
                         <i class="fas fa-user-plus me-1"></i><a href="/grau/{{ group.id }}">Записаться</a>
                     </button>
+                    {% if lead %}
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                        <i class="fas fa-user-plus me-1"></i><a href="/set_lead/{{ group.id }}">Назначить лидера</a>
+                    </button>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     {% if group.Students %}

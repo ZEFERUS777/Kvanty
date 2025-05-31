@@ -1,4 +1,4 @@
-from wtforms import StringField, SubmitField, PasswordField, EmailField, BooleanField, validators, IntegerField
+from wtforms import StringField, SubmitField, PasswordField, EmailField, BooleanField, validators, FieldList
 from flask_wtf import FlaskForm
 
 
@@ -21,14 +21,21 @@ class Add_Student_Form(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    email = EmailField('Введите ваш email', validators=[validators.DataRequired()])
-    password = PasswordField('Введите ваш пароль', validators=[validators.DataRequired()])
+    email = EmailField('Введите ваш email', validators=[
+                       validators.DataRequired()])
+    password = PasswordField('Введите ваш пароль', validators=[
+                             validators.DataRequired()])
     remember = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
-    
+
 
 class RegistrationForm(FlaskForm):
-    name = StringField('Введите ваше имя:', validators=[validators.DataRequired()])
-    surname = StringField('Введите вашу фамилию:', validators=[validators.DataRequired()])
-    email = StringField('Введите ваш email:', validators=[validators.DataRequired()])
-    password = PasswordField('Введите ваш пароль:', validators=[validators.DataRequired()])
+    name = StringField('Введите ваше имя:', validators=[
+                       validators.DataRequired()])
+    surname = StringField('Введите вашу фамилию:', validators=[
+                          validators.DataRequired()])
+    email = StringField('Введите ваш email:', validators=[
+                        validators.DataRequired()])
+    password = PasswordField('Введите ваш пароль:', validators=[
+                             validators.DataRequired()])
+    

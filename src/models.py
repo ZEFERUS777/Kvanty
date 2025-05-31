@@ -13,6 +13,7 @@ class Groups(db.Model, SerializerMixin):
     group_name = db.Column(db.String(128), nullable=False, unique=True)
     tuitor = db.Column(db.String(128), nullable=False)
     Students = db.Column(db.Text)
+    lead_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
 
 class Students(db.Model, SerializerMixin):

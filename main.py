@@ -22,7 +22,7 @@ def index():
     # Для незарегистрированных пользователей
     if not current_user.is_authenticated:
         return render_template("base.html")
-    
+
     # Для зарегистрированных пользователей
     if current_user.rule == 1:
         return render_template("base.html", rule="admin")
@@ -60,6 +60,9 @@ def add_group():
 @login_required
 def group(id):
     group = Groups.query.get(int(id))
+    lead = group.lead_id
+    if not lead and current_user.rule == 1:
+        return render_template("group.html", group=group, lead=True)
     if request.method == "POST":
         student_name = request.form.get("student_name")
         students = group.Students.split(",") if group.Students else []
@@ -73,6 +76,7 @@ def group(id):
     return render_template("group.html", group=group)
 
 
+# функция для для записи ученика в группу
 @app.route("/grau/<int:id>", methods=["GET", "POST"])
 @login_required
 def group_detail(id):
@@ -154,6 +158,57 @@ def register():
         db.session.commit()
         return redirect(url_for("login"))
     return render_template("register.html", form=form)
+
+
+@app.route("/set_lead/<int:id>", methods=["GET", "POST"])
+@login_required
+def set_lead(id):
+    if current_user.rule != 1:  # Исправлено сравнение
+        flash("У вас нет прав для назначения руководителя", "error")
+        return redirect(url_for("groups"))
+
+    group = Groups.query.get_or_404(id)
+
+    # Разрешаем изменение руководителя (убрали проверку на существующего лидера)
+    # Только учителя (предположим, rule=3 - учителя)
+    users = Users.query.all()
+
+    if request.method == "POST":
+        new_lead_id = request.form.get("lead_id")
+
+        if not new_lead_id:
+            flash("Не выбран руководитель", "error")
+            return redirect(url_for("set_lead", id=id))
+
+        user = Users.query.get(new_lead_id)
+
+        if not user:
+            flash("Пользователь не найден", "error")
+            return redirect(url_for("set_lead", id=id))
+
+        # Снимаем предыдущую роль лидера если нужно
+        prev_lead = Users.query.get(group.lead_id)
+        if prev_lead:
+            prev_lead.rule = 3  # Возвращаем роль учителя
+
+        # Назначаем нового лидера
+        user.rule = 2
+        group.lead_id = user.id
+        db.session.commit()
+
+        flash("Руководитель группы успешно назначен!", "success")
+        return redirect(url_for("groups"))
+
+    return render_template("set_lead.html", group=group, teachers=users)
+
+
+# роут для назначения администратора
+@app.route("/get_adm")
+def get_adm():
+    user = Users.query.filter_by(id=current_user.id).first()
+    user.rule = 1
+    db.session.commit()
+    return redirect(url_for("groups"))
 
 
 with app.app_context():
