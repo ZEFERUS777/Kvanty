@@ -152,7 +152,7 @@ def register():
         user_login = name + " " + surname
         if Users.query.filter_by(email=email).first():
             return render_template("register.html", form=form, error="Такой пользователь уже существует")
-        new_user = Users(username=user_login, email=email)
+        new_user = Users(username=user_login, email=email, rule=0)
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
@@ -168,10 +168,8 @@ def set_lead(id):
         return redirect(url_for("groups"))
 
     group = Groups.query.get_or_404(id)
-
-    # Разрешаем изменение руководителя (убрали проверку на существующего лидера)
-    # Только учителя (предположим, rule=3 - учителя)
-    users = Users.query.all()
+    users = Users.query.filter_by(rule=3).all()
+    print(users)
 
     if request.method == "POST":
         new_lead_id = request.form.get("lead_id")
@@ -209,6 +207,27 @@ def get_adm():
     user.rule = 1
     db.session.commit()
     return redirect(url_for("groups"))
+
+
+@app.route("/set_teacher", methods=["GET", "POST"])
+@login_required
+def set_teacher():
+    if current_user.rule != 1:  # Исправлено сравнение
+        flash("У вас нет прав для назначения руководителя", "error")
+        return redirect(url_for("groups"))
+    users = Users.query.filter_by(rule=0).all()
+    if request.method == "POST":
+        teacher_id = request.form.get("teacher_id")
+        user = Users.query.get(teacher_id)
+        if user:
+            user.rule = 3
+            print(user.rule)
+            db.session.commit()
+            flash("Учитель успешно назначен!", "success")
+            return redirect(url_for("index"))
+        else:
+            return render_template("set_teacher.html", teachers=users, error="Пользователь не найден")
+    return render_template("set_teacher.html", teachers=users)
 
 
 with app.app_context():

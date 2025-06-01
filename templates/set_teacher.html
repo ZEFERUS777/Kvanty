@@ -21,7 +21,7 @@
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Назначить руководителя для группы "{{ group.name }}"</h4>
+                    <h4 class="mb-0">Выдать роль учителя</h4>
                 </div>
                 
                 <div class="card-body">
@@ -29,9 +29,9 @@
 
                         
                         <div class="mb-3">
-                            <label class="form-label">Выберите преподавателя:</label>
-                            <select id="teacher-select" class="form-select" name="lead_id" required>
-                                <option value="" disabled selected>-- Выберите преподавателя --</option>
+                            <label class="form-label">Выберите пользователя:</label>
+                            <select id="teacher-select" class="form-select" name="teacher_id" required>
+                                <option value="" disabled selected>-- Выберите пользователя --</option>
                                 {% for teacher in teachers %}
                                 <option value="{{ teacher.id }}">{{ teacher.username }}</option>
                                 {% endfor %}
@@ -40,7 +40,7 @@
                         
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-person-check"></i> Назначить руководителем
+                                <i class="bi bi-person-check"></i> Назначить учителя
                             </button>
                             <a href="{{ url_for('groups') }}" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Назад к группам
