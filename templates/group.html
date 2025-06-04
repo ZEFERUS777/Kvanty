@@ -46,9 +46,13 @@
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Студенты</h5>
+                    {% if user %}
+                    {% if user.lead_group == group.id %}
                     <button class="btn btn-light btn-sm" data-bs-target="#addStudentModal">
                         <i class="fas fa-user-plus me-1"></i><a href="/grau/{{ group.id }}">Записаться</a>
                     </button>
+                    {% endif %}
+                    {% endif %}
                     {% if lead %}
                     <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
                         <i class="fas fa-user-plus me-1"></i><a href="/set_lead/{{ group.id }}">Назначить лидера</a>

@@ -73,7 +73,7 @@ def group(id):
         group.Students = ",".join(students)
         db.session.commit()
         flash("Вы записались", "success")
-    return render_template("group.html", group=group)
+    return render_template("group.html", group=group, user=current_user)
 
 
 # функция для для записи ученика в группу
@@ -81,6 +81,11 @@ def group(id):
 @login_required
 def group_detail(id):
     group = Groups.query.get_or_404(id)
+    if current_user.id != group.lead_id:
+        flash("Вы не являетесь руководителем этой группы", "error")
+        return redirect(url_for("groups"))
+
+
     form = Add_Student_Form()
 
     if form.validate_on_submit():
@@ -169,7 +174,6 @@ def set_lead(id):
 
     group = Groups.query.get_or_404(id)
     users = Users.query.filter_by(rule=3).all()
-    print(users)
 
     if request.method == "POST":
         new_lead_id = request.form.get("lead_id")
@@ -190,7 +194,7 @@ def set_lead(id):
             prev_lead.rule = 3  # Возвращаем роль учителя
 
         # Назначаем нового лидера
-        user.rule = 2
+        user.lead_group = group.id
         group.lead_id = user.id
         db.session.commit()
 
@@ -221,7 +225,6 @@ def set_teacher():
         user = Users.query.get(teacher_id)
         if user:
             user.rule = 3
-            print(user.rule)
             db.session.commit()
             flash("Учитель успешно назначен!", "success")
             return redirect(url_for("index"))
