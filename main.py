@@ -85,7 +85,6 @@ def group_detail(id):
         flash("Вы не являетесь руководителем этой группы", "error")
         return redirect(url_for("groups"))
 
-
     form = Add_Student_Form()
 
     if form.validate_on_submit():
@@ -234,6 +233,35 @@ def set_teacher():
         else:
             return render_template("set_teacher.html", teachers=users, error="Пользователь не найден")
     return render_template("set_teacher.html", teachers=users)
+
+
+@app.route("/student/<int:id>", methods=["GET", "POST"])
+@login_required
+def student(id):
+    student = Users.query.get_or_404(id)
+    group = Groups.query.filter_by(id=student.group_id).first()
+
+    if current_user.lead_group != group.id:
+        flash("У вас нет прав для просмотра этого студента", "error")
+        return redirect(url_for("index"))
+
+    if request.method == "POST":
+        try:
+            rat = int(request.form.get("rating", 0))
+            if rat < 0 or rat > 100:
+                flash("Оценка должна быть от 0 до 100", "error")
+                return redirect(url_for("student", id=id))
+
+            student.group_rate = rat
+            db.session.commit()
+            flash("Оценка успешно обновлена", "success")
+        except ValueError:
+            flash("Некорректное значение оценки", "error")
+
+        return redirect(url_for("student", id=id))
+
+    rate = student.group_rate or 0
+    return render_template("student.html", student=student, rate=rate)
 
 
 with app.app_context():

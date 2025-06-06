@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Студент{% endblock %}
+{% block styles %}
+{{ super() }}
+<style>
+    .rating-input {
+        width: 80px;
+        padding: 6px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 16px;
+    }
+    .rating-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .rating-btn {
+        width: 30px;
+        height: 30px;
+        border: none;
+        border-radius: 50%;
+        background: #f0f0f0;
+        cursor: pointer;
+        font-size: 16px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2>Профиль студента</h2>
+<form method="post">
+    <label>Логин:</label>
+    {{ student.username }}<br><br>
+    
+    <label>Рейтинг:</label>
+    <div class="rating-container">
+        <button type="button" class="rating-btn" id="decrease">-</button>
+        <input type="number" 
+               name="rating" 
+               class="rating-input"
+               value="{{ rate or 0 }}"
+               min="0"
+               max="100"
+               required>
+        <button type="button" class="rating-btn" id="increase">+</button>
+    </div>
+    <br>
+    
+    <input type="submit" value="Сохранить" class="btn">
+</form>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.querySelector('.rating-input');
+        const decreaseBtn = document.getElementById('decrease');
+        const increaseBtn = document.getElementById('increase');
+        
+        // Обработчики для кнопок +/-
+        decreaseBtn.addEventListener('click', () => {
+            let value = parseInt(input.value) || 0;
+            input.value = Math.max(0, value - 1);
+        });
+        
+        increaseBtn.addEventListener('click', () => {
+            let value = parseInt(input.value) || 0;
+            input.value = Math.min(100, value + 1);
+        });
+        
+        // Валидация при ручном вводе
+        input.addEventListener('input', () => {
+            let value = parseInt(input.value) || 0;
+            if (value > 100) input.value = 100;
+            if (value < 0) input.value = 0;
+        });
+    });
+</script>
+{% endblock %}

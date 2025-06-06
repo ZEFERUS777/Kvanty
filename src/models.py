@@ -38,6 +38,7 @@ class Users(db.Model, UserMixin, SerializerMixin):
     group_id = db.Column(db.Integer, db.ForeignKey("groups.id"))
     rule = db.Column(db.Integer, db.ForeignKey("rules.id"))
     lead_group = db.Column(db.Integer, db.ForeignKey("groups.id"))
+    group_rate = db.Column(db.Integer)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
