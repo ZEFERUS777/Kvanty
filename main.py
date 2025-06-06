@@ -93,6 +93,8 @@ def group_detail(id):
             students_list = group.Students.split(",") if group.Students else []
 
             new_student = f"{form.student_name.data.strip()}"
+            user = Users.query.filter_by(username=new_student).first()
+            user.group_id = group.id
             if new_student:
                 students_list.append(new_student)
 
@@ -196,6 +198,7 @@ def set_lead(id):
         # Назначаем нового лидера
         user.lead_group = group.id
         group.lead_id = user.id
+        user.group_id = group.id
         db.session.commit()
 
         flash("Руководитель группы успешно назначен!", "success")
