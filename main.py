@@ -34,7 +34,6 @@ def index():
 @login_required
 def groups():
     group = Groups.query.all()
-    print(group)
     return render_template("groups.html", groups=group)
 
 
@@ -61,11 +60,13 @@ def add_group():
 def group(id):
     group = Groups.query.get(int(id))
     lead = group.lead_id
+    students = Users.query.filter_by(group_id=id, rule=0).all()
+    print(students)
     if not lead and current_user.rule == 1:
         return render_template("group.html", group=group, lead=True)
     if request.method == "POST":
         student_name = request.form.get("student_name")
-        students = group.Students.split(",") if group.Students else []
+        students = Users.query.filter_by(username=student_name).all()
         if student_name.strip() in students:
             flash("Студент уже записан", "warning")
             return redirect(url_for("group", id=id))
@@ -73,7 +74,7 @@ def group(id):
         group.Students = ",".join(students)
         db.session.commit()
         flash("Вы записались", "success")
-    return render_template("group.html", group=group, user=current_user)
+    return render_template("group.html", group=group, user=current_user, students=students)
 
 
 # функция для для записи ученика в группу

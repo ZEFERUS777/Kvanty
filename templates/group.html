@@ -62,12 +62,16 @@
                 <div class="card-body">
                     {% if group.Students %}
                         <div class="row g-3">
-                            {% for student in group.Students.split(',') %}
-                                {% if student.strip() %}
+                            {% for student in students %}
+                                {% if student %}
                                     <div class="col-md-6">
                                         <div class="card student-card h-100">
                                             <div class="card-body">
-                                                <h6 class="card-title mb-0">{{ student.strip() }}</h6>
+                                                {% if user.lead_group == group.id %}
+                                                <h6 class="card-title mb-0"><a href="/student/{{ student.id }}">{{ student.username }}</a></h6>
+                                                {% else %}
+                                                <h6 class="card-title mb-0">{{ student.username }}</h6>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
