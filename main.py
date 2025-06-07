@@ -25,9 +25,9 @@ def index():
 
     # Для зарегистрированных пользователей
     if current_user.rule == 1:
-        return render_template("base.html", rule="admin")
+        return render_template("base.html", rule="admin", autorized=True)
     else:
-        return render_template("base.html")
+        return render_template("base.html", autorized=True)
 
 
 @app.route("/groups")
@@ -262,7 +262,7 @@ def student(id):
         return redirect(url_for("student", id=id))
 
     rate = student.group_rate or 0
-    return render_template("student.html", student=student, rate=rate)
+    return render_template("student.html", student=student, rate=rate, group=group)
 
 
 with app.app_context():
@@ -270,4 +270,5 @@ with app.app_context():
 
 
 if __name__ == "__main__":
+    print("Запуск сервера")
     app.run(debug=True)

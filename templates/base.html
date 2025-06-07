@@ -66,8 +66,13 @@
                                 Войти
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow">
+                                {% if not autorized %}
                                 <li><a class="dropdown-item" href="/login">Вход</a></li>
                                 <li><a class="dropdown-item" href="/register">Регистрация</a></li>
+                                {% else %}
+                                <li><a class="dropdown-item" href="/profile">Профиль</a></li>
+                                <li><a class="dropdown-item" href="/logout">Выйти</a></li>
+                                {% endif %}
                             </ul>
                         </div>
                     </div>
