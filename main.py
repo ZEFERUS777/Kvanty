@@ -34,7 +34,7 @@ def index():
 @login_required
 def groups():
     group = Groups.query.all()
-    return render_template("groups.html", groups=group)
+    return render_template("groups.html", groups=group, autorized=True)
 
 
 @app.route("/add_group", methods=["GET", "POST"])
@@ -63,7 +63,7 @@ def group(id):
     students = Users.query.filter_by(group_id=id, rule=0).all()
     print(students)
     if not lead and current_user.rule == 1:
-        return render_template("group.html", group=group, lead=True)
+        return render_template("group.html", group=group, lead=True, autorized=True)
     if request.method == "POST":
         student_name = request.form.get("student_name")
         students = Users.query.filter_by(username=student_name).all()
@@ -74,7 +74,8 @@ def group(id):
         group.Students = ",".join(students)
         db.session.commit()
         flash("Вы записались", "success")
-    return render_template("group.html", group=group, user=current_user, students=students)
+    return render_template("group.html", group=group, user=current_user, students=students, 
+                           autorized=True)
 
 
 # функция для для записи ученика в группу
@@ -82,6 +83,7 @@ def group(id):
 @login_required
 def group_detail(id):
     group = Groups.query.get_or_404(id)
+
     if current_user.id != group.lead_id:
         flash("Вы не являетесь руководителем этой группы", "error")
         return redirect(url_for("groups"))
@@ -114,6 +116,7 @@ def group_detail(id):
     return render_template("add_student.html",
                            form=form,
                            group=group,
+                           autorized=True,
                            students=group.Students.split(",") if group.Students else [])
 
 
@@ -159,7 +162,7 @@ def register():
         user_login = name + " " + surname
         if Users.query.filter_by(email=email).first():
             return render_template("register.html", form=form, error="Такой пользователь уже существует")
-        new_user = Users(username=user_login, email=email, rule=0)
+        new_user = Users(username=user_login, email=email, rule=0, group_rate=0)
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
@@ -204,10 +207,11 @@ def set_lead(id):
         flash("Руководитель группы успешно назначен!", "success")
         return redirect(url_for("groups"))
 
-    return render_template("set_lead.html", group=group, teachers=users)
+    return render_template("set_lead.html", group=group, teachers=users, autorized=True)
 
 
 # роут для назначения администратора
+@login_required
 @app.route("/get_adm")
 def get_adm():
     user = Users.query.filter_by(id=current_user.id).first()
@@ -232,8 +236,8 @@ def set_teacher():
             flash("Учитель успешно назначен!", "success")
             return redirect(url_for("index"))
         else:
-            return render_template("set_teacher.html", teachers=users, error="Пользователь не найден")
-    return render_template("set_teacher.html", teachers=users)
+            return render_template("set_teacher.html", teachers=users, error="Пользователь не найден", autorized=True)
+    return render_template("set_teacher.html", teachers=users, autorized=True)
 
 
 @app.route("/student/<int:id>", methods=["GET", "POST"])
@@ -262,7 +266,17 @@ def student(id):
         return redirect(url_for("student", id=id))
 
     rate = student.group_rate or 0
-    return render_template("student.html", student=student, rate=rate, group=group)
+    return render_template("student.html", student=student, rate=rate, group=group, autorized=True)
+
+
+@app.route("/profile")
+@login_required
+def profile():
+    group = Groups.query.filter_by(id=current_user.group_id).first()
+    if current_user.rule == 1:
+        return render_template("profile.html", user=current_user, group=group, autorized=True, rule="admin")
+    else:
+        return render_template("profile.html", user=current_user, group=group, autorized=True)
 
 
 with app.app_context():

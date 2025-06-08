@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% block title %}Профиль{% endblock %}
+{% block content %}
+<div class="profile-container" data-aos="fade-up">
+    <div class="card profile-card shadow-lg">
+        <div class="card-header bg-primary text-white py-4">
+            <div class="d-flex align-items-center">
+                <div class="avatar-container me-4">
+                    <div class="avatar-circle bg-light text-primary">
+                        <i class="fas fa-user fa-2x"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="mb-0">{{ user.username }}</h1>
+                    <p class="mb-0 opacity-75">Ваш профиль</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body py-4">
+            <div class="profile-info">
+                <div class="info-item" data-aos="fade-right" data-aos-delay="100">
+                    <div class="icon-circle bg-primary-subtle">
+                        <i class="fas fa-user-tag text-primary"></i>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Логин</label>
+                        <p class="info-value">{{ user.username }}</p>
+                    </div>
+                </div>
+                
+                <div class="info-item" data-aos="fade-right" data-aos-delay="200">
+                    <div class="icon-circle bg-primary-subtle">
+                        <i class="fas fa-envelope text-primary"></i>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Почта</label>
+                        <p class="info-value">{{ user.email }}</p>
+                    </div>
+                </div>
+                
+                <div class="info-item" data-aos="fade-right" data-aos-delay="300">
+                    <div class="icon-circle bg-primary-subtle">
+                        <i class="fas fa-users text-primary"></i>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Группа</label>
+                        <p class="info-value">{{ group.group_name if group else 'Нет группы' }}</p>
+                    </div>
+                </div>
+                
+                <div class="info-item" data-aos="fade-right" data-aos-delay="400">
+                    <div class="icon-circle bg-warning-subtle">
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Рейтинг</label>
+                        <div class="rating-value">
+                            {{ user.group_rate }}
+                            <div class="stars">
+                                {% for i in range(5) %}
+                                <i class="fas fa-star {{ 'text-warning' if i < user.group_rate|int else 'text-secondary' }}"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if user.rule == 1 %}
+                <div class="role-badge admin-badge" data-aos="zoom-in" data-aos-delay="500">
+                    <i class="fas fa-crown me-2"></i>Вы являетесь администратором!
+                </div>
+                {% elif user.rule == 3 %}
+                <div class="role-badge teacher-badge" data-aos="zoom-in" data-aos-delay="500">
+                    <i class="fas fa-chalkboard-teacher me-2"></i>Вы являетесь преподавателем!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card-footer bg-light py-3">
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-outline-primary me-2" id="editProfileBtn">
+                    <i class="fas fa-edit me-1"></i>Редактировать
+                </button>
+                <button class="btn btn-primary" id="settingsBtn">
+                    <i class="fas fa-cog me-1"></i>Настройки
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+    
+    .profile-card {
+        border-radius: 15px;
+        overflow: hidden;
+        border: none;
+    }
+    
+    .avatar-container {
+        position: relative;
+    }
+    
+    .avatar-circle {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .avatar-circle:hover {
+        transform: scale(1.05);
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        padding: 1.25rem;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.3s;
+    }
+    
+    .info-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .icon-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.5rem;
+        flex-shrink: 0;
+    }
+    
+    .info-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 0.25rem;
+    }
+    
+    .info-value {
+        font-size: 1.1rem;
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+    
+    .rating-value {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .stars {
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+    }
+    
+    .role-badge {
+        padding: 12px 20px;
+        border-radius: 50px;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .admin-badge {
+        background: linear-gradient(45deg, #4e54c8, #8f94fb);
+        color: white;
+    }
+    
+    .teacher-badge {
+        background: linear-gradient(45deg, #ff8c00, #ffb142);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Инициализация AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        
+        // Анимация кнопок
+        const buttons = document.querySelectorAll('#editProfileBtn, #settingsBtn');
+        buttons.forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                btn.style.transform = 'translateY(-3px)';
+                btn.style.boxShadow = '0 7px 14px rgba(0,0,0,0.1)';
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translateY(0)';
+                btn.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            });
+            
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'translateY(1px)';
+            });
+            
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'translateY(-3px)';
+            });
+        });
+        
+        // Имитация действий
+        document.getElementById('editProfileBtn').addEventListener('click', function() {
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Загрузка...';
+            setTimeout(() => {
+                alert('Функция редактирования в разработке');
+                this.innerHTML = '<i class="fas fa-edit me-1"></i>Редактировать';
+            }, 1000);
+        });
+        
+        document.getElementById('settingsBtn').addEventListener('click', function() {
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Загрузка...';
+            setTimeout(() => {
+                alert('Настройки профиля будут доступны в следующем обновлении');
+                this.innerHTML = '<i class="fas fa-cog me-1"></i>Настройки';
+            }, 1000);
+        });
+    });
+</script>
+{% endblock %}
