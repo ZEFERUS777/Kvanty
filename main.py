@@ -74,7 +74,7 @@ def group(id):
         group.Students = ",".join(students)
         db.session.commit()
         flash("Вы записались", "success")
-    return render_template("group.html", group=group, user=current_user, students=students, 
+    return render_template("group.html", group=group, user=current_user, students=students,
                            autorized=True)
 
 
@@ -162,7 +162,8 @@ def register():
         user_login = name + " " + surname
         if Users.query.filter_by(email=email).first():
             return render_template("register.html", form=form, error="Такой пользователь уже существует")
-        new_user = Users(username=user_login, email=email, rule=0, group_rate=0)
+        new_user = Users(username=user_login, email=email,
+                         rule=0, group_rate=0)
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()

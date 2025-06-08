@@ -72,6 +72,26 @@ body {
 .footer {
     background: #111827;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: white !important; /* Основной цвет текста */
+}
+
+.footer .text-muted {
+    color: rgba(255, 255, 255, 0.85) !important; /* Вторичный текст */
+}
+
+.footer a {
+    color: white !important;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.footer a:hover {
+    color: var(--primary) !important;
+    transform: translateY(-2px);
+}
+
+.footer hr {
+    border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 .social-links a {
