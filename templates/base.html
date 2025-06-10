@@ -94,7 +94,22 @@
 
     <main class="flex-grow-1 mt-5">
         <div class="container py-5">
-            {% block content %}{% endblock %}
+            {% block content %}
+            <main>
+                <div class="px-4 py-5 my-5 text-center">
+                    <h1 class="display-5 fw-bold">Технопарк</h1>
+                    <div class="col-lg-6 mx-auto">
+                        <p class="lead mb-4">Программируй будущее! Интенсивное обучение в Технопарке: Python, Java, Web.
+                            Практика, стажировки, трудоустройство.</p>
+
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                            <a href="/groups" class="btn btn-primary btn-lg px-4 gap-3">Смотреть группы</a>
+                            <a href="#" class="btn btn-outline-secondary btn-lg px-4">Контактная информация</a>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            {% endblock %}
         </div>
     </main>
 
@@ -138,11 +153,17 @@
                         <a href="#" class="text-decoration-none text-muted">
                             <i class="fab fa-youtube fa-lg"></i>
                         </a>
-                        <a href="#" class="text-decoration-none text-muted">
+                        <a href="https://github.com/ZEFERUS777/Kvanty" class="text-decoration-none text-muted"
+                            target="_blank">
                             <i class="fab fa-github fa-lg"></i>
                         </a>
                     </div>
                 </div>
+            </div>
+
+            <div class="col-lg-4">
+                <h6 class="mb-3">Адрес</h6>
+                <p class="text-muted">Japan Tokyo, 1-1-1 Shibuya, Shibuya-ku, Tokyo, 150-0001, Japan</p>
             </div>
 
             <hr class="my-4">

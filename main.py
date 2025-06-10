@@ -139,7 +139,7 @@ def login():
             else:
                 return render_template("login.html", form=login_form,
                                        error="Неверный логин или пароль")
-        except Exception as e:
+        except Exception:
             return render_template("login.html", form=login_form, error="Ошибка при входе")
     return render_template("login.html", form=login_form)
 
