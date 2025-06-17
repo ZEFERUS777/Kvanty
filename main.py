@@ -40,7 +40,6 @@ def groups():
 @app.route("/add_group", methods=["GET", "POST"])
 @login_required
 def add_group():
-    print(current_user.rule)
     if current_user.rule == 1:
         form = Add_Group_Form()
         if request.method == "POST":
@@ -61,7 +60,6 @@ def group(id):
     group = Groups.query.get(int(id))
     lead = group.lead_id
     students = Users.query.filter_by(group_id=id, rule=0).all()
-    print(students)
     if not lead and current_user.rule == 1:
         return render_template("group.html", group=group, lead=True, autorized=True)
     if request.method == "POST":
@@ -83,7 +81,9 @@ def group(id):
 @login_required
 def group_detail(id):
     group = Groups.query.get_or_404(id)
-
+    users = Users.query.all()
+    students = Users.query.filter_by(group_id=id, rule=0).all()
+    
     if current_user.id != group.lead_id:
         flash("Вы не являетесь руководителем этой группы", "error")
         return redirect(url_for("groups"))
@@ -117,7 +117,8 @@ def group_detail(id):
                            form=form,
                            group=group,
                            autorized=True,
-                           students=group.Students.split(",") if group.Students else [])
+                           users=users,
+                           students=students)
 
 
 @login_manager.user_loader
@@ -160,14 +161,19 @@ def register():
         email = form.email.data
         password = form.password.data
         user_login = name + " " + surname
-        if Users.query.filter_by(email=email).first():
-            return render_template("register.html", form=form, error="Такой пользователь уже существует")
-        new_user = Users(username=user_login, email=email,
-                         rule=0, group_rate=0)
-        new_user.set_password(password)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for("login"))
+        try:
+            if Users.query.filter_by(email=email).first():
+                return render_template("register.html", form=form, error="Пользователь с такой почтой уже зарегистрирован")
+            if Users.query.filter_by(username=user_login).first():
+                return render_template("register.html", form=form, error="Пользователь с таким логином уже существует")
+            new_user = Users(username=user_login, email=email,
+                            rule=0, group_rate=0)
+            new_user.set_password(password)
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for("login"))
+        except Exception:
+            return render_template("register.html", form=form, error="Ошибка при регистрации")
     return render_template("register.html", form=form)
 
 

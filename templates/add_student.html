@@ -2,6 +2,7 @@
 {% block title %}Добавить студента{% endblock %}
 
 {% block styles %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
     /* Анимации */
     @keyframes slideIn {
@@ -34,14 +35,25 @@
         padding: 1.5rem;
     }
 
-    .form-control {
-        transition: all 0.3s ease;
-        border: 2px solid #e5e7eb;
+    /* Стили для Select2 */
+    .select2-container .select2-selection--single {
+        height: 48px;
+        border: 2px solid #e5e7eb !important;
+        border-radius: 0.375rem;
+        padding: 0.375rem;
     }
-
-    .form-control:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 46px;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 46px;
+        padding-left: 12px;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #6c757d;
     }
 
     /* Стили флеш-сообщений */
@@ -68,6 +80,7 @@
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
+        margin-top: 1rem;
     }
 
     .submit-btn .spinner {
@@ -84,6 +97,48 @@
 
     .submit-btn.loading .spinner {
         display: block;
+    }
+    
+    /* Стили списка студентов */
+    .student-list {
+        margin-top: 2rem;
+    }
+    
+    .student-card {
+        background: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+    
+    .student-card:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+    }
+    
+    .student-actions {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    
+    .student-card:hover .student-actions {
+        opacity: 1;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
     }
 </style>
 {% endblock %}
@@ -112,25 +167,28 @@
             <!-- Форма добавления -->
             <div class="form-card mb-5">
                 <div class="form-header">
-                    <h2 class="mb-0">Добавить нового студента</h2>
-                    <p class="mb-0 opacity-75">Заполните форму ниже</p>
+                    <h2 class="mb-0">Добавить студента в группу</h2>
+                    <p class="mb-0 opacity-75">{{ group.name }}</p>
                 </div>
                 
                 <form method="POST" class="p-4">
                     {{ form.hidden_tag() }}
 
                     <div class="mb-4">
-                        {{ form.student_name.label(class="form-label fw-bold mb-3") }}
-                        {{ form.student_name(
-                            class="form-control py-2 px-3",
-                            placeholder="Введите полное имя студента",
-                            oninput="validateInput(this)"
-                        ) }}
-                        <div class="invalid-feedback">Имя должно содержать минимум 3 символа</div>
+                        <label for="student-select" class="form-label fw-bold mb-3">Выберите студента</label>
+                        <select id="student-select" class="form-control" name="student_name" required>
+                            <option value=""></option>
+                            {% for user in users %}
+                                {% if user.group_id is none %}
+                                    <option value="{{ user.username }}">{{ user.username }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <div class="form-text mt-2">Начните вводить имя для поиска</div>
                     </div>
 
                     <button type="submit" class="btn btn-primary submit-btn w-100 py-2">
-                        <span class="button-text">Добавить студента</span>
+                        <span class="button-text">Добавить в группу</span>
                         <div class="spinner">
                             <div class="spinner-border spinner-border-sm" role="status">
                                 <span class="visually-hidden">Loading...</span>
@@ -139,13 +197,61 @@
                     </button>
                 </form>
             </div>
+            
+            <!-- Список студентов в группе -->
+            <div class="student-list">
+                <h4 class="mb-3">Студенты в группе</h4>
+                
+                {% if students %}
+                    <div class="list-group">
+                        {% for student in students %}
+                            <div class="student-card">
+                                <div>
+                                    <h5 class="mb-0">{{ student.username }}</h5>
+                                </div>
+                                <div class="student-actions">
+                                    <button class="btn btn-sm btn-outline-danger remove-student" data-student="{{ student }}">
+                                        <i class="fas fa-times"></i> Удалить
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-user-graduate"></i>
+                        <h5>В группе пока нет студентов</h5>
+                        <p class="text-muted">Добавьте студентов с помощью формы выше</p>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+    // Инициализация Select2
+    $(document).ready(function() {
+        $('#student-select').select2({
+            placeholder: "Поиск студента...",
+            allowClear: true,
+            width: '100%',
+            minimumInputLength: 2,
+            language: {
+                noResults: function() {
+                    return "Студенты не найдены";
+                },
+                inputTooShort: function(args) {
+                    return "Введите хотя бы " + args.minimum + " символа";
+                }
+            }
+        });
+    });
+
     // Анимация флеш-сообщений
     document.querySelectorAll('.alert').forEach(alert => {
         setTimeout(() => {
@@ -154,40 +260,36 @@
         }, 5000);
     });
 
-    // Валидация формы
-    function validateInput(input) {
-        if (input.value.length >= 3) {
-            input.classList.remove('is-invalid');
-            input.classList.add('is-valid');
-        } else {
-            input.classList.remove('is-valid');
-            input.classList.add('is-invalid');
-        }
-    }
-
     // Обработка отправки формы
     document.querySelector('form').addEventListener('submit', function(e) {
         const btn = this.querySelector('.submit-btn');
+        const select = document.getElementById('student-select');
+        
+        if (!select.value) {
+            e.preventDefault();
+            $(select).next('.select2-container').addClass('is-invalid');
+            return;
+        }
+        
         btn.classList.add('loading');
         btn.disabled = true;
     });
 
-    // Параллакс эффект для карточки
-    document.querySelector('.form-card').addEventListener('mousemove', (e) => {
-        const card = e.currentTarget;
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        card.style.transform = `
-            perspective(1000px)
-            rotateX(${(y - rect.height/2) / 20}deg)
-            rotateY(${(x - rect.width/2) / -20}deg)
-        `;
+    // Обработка удаления студента
+    document.querySelectorAll('.remove-student').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const studentName = this.dataset.student;
+            if (confirm(`Вы уверены, что хотите удалить ${studentName} из группы?`)) {
+                // Здесь должна быть логика удаления
+                // Покажем временное сообщение
+                alert(`Студент ${studentName} будет удален после реализации функционала`);
+            }
+        });
     });
 
-    document.querySelector('.form-card').addEventListener('mouseleave', (e) => {
-        e.currentTarget.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+    // Валидация при изменении выбора
+    document.getElementById('student-select').addEventListener('change', function() {
+        $(this).next('.select2-container').removeClass('is-invalid');
     });
 </script>
 {% endblock %}
