@@ -3,105 +3,247 @@
 {% block styles %}
 {{ super() }}
 <style>
+    .profile-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+        min-height: 100vh;
+        padding: 3rem 0;
+    }
+    
     .profile-card {
-        background: #fff;
-        border-radius: 15px;
-        padding: 2rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        position: relative;
+        z-index: 1;
         animation: fadeInUp 0.8s ease-out forwards;
     }
     
     .profile-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-10px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
+    
+    .profile-header {
+        background: linear-gradient(120deg, #4a90e2 0%, #5e60ce 100%);
+        padding: 3rem 2rem 4rem;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+        transform: rotate(30deg);
+    }
+    
+    .avatar-container {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: white;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        position: relative;
+        z-index: 2;
+        border: 4px solid white;
+    }
+    
+    .avatar-container i {
+        font-size: 5rem;
+        background: linear-gradient(120deg, #4a90e2 0%, #5e60ce 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .profile-content {
+        padding: 2rem;
+        margin-top: -40px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .profile-stats {
+        display: flex;
+        justify-content: space-around;
+        margin: 2rem 0;
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .stat-item {
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #4a90e2;
+        margin-bottom: 0.3rem;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     
     .rating-section {
         display: flex;
         align-items: center;
-        gap: 1.5rem;
-        margin: 2rem 0;
-        padding: 1.5rem;
-        background: #f8f9fa;
-        border-radius: 10px;
+        justify-content: center;
+        gap: 2rem;
+        margin: 2.5rem 0;
+        padding: 1.8rem;
+        background: linear-gradient(to right, #f0f7ff 0%, #f8fbfe 100%);
+        border-radius: 18px;
         position: relative;
+        border: 1px solid #eef5ff;
+    }
+    
+    .rating-controls {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
     }
     
     .rating-input {
-        width: 80px;
-        padding: 8px 12px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
+        width: 100px;
+        padding: 12px 15px;
+        border: 2px solid #dbeafe;
+        border-radius: 12px;
         text-align: center;
-        font-size: 1.2rem;
-        font-weight: 600;
+        font-size: 1.4rem;
+        font-weight: 700;
         transition: all 0.3s ease;
-        background: #fff;
+        background: white;
+        color: #4a90e2;
+        box-shadow: 0 5px 15px rgba(74, 144, 226, 0.1);
     }
     
     .rating-input:focus {
-        border-color: #4a90e2;
-        box-shadow: 0 0 8px rgba(74, 144, 226, 0.2);
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 4px rgba(147, 197, 253, 0.3);
         outline: none;
     }
     
     .rating-btn {
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
         border: none;
         border-radius: 50%;
-        background: #4a90e2;
+        background: linear-gradient(135deg, #4a90e2 0%, #5e60ce 100%);
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
     }
     
     .rating-btn:hover {
-        background: #357abd;
         transform: scale(1.1);
+        box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+    }
+    
+    .rating-btn:active {
+        transform: scale(0.95);
     }
     
     .rating-display {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #4a90e2;
-        animation: popIn 0.3s ease;
+        position: relative;
+        font-size: 3.2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #4a90e2 0%, #5e60ce 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: popIn 0.4s ease;
+        text-shadow: 0 5px 15px rgba(74, 144, 226, 0.2);
     }
     
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-label {
+    .rating-label {
+        position: absolute;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.9rem;
+        color: #64748b;
         font-weight: 600;
-        color: #555;
+        white-space: nowrap;
     }
     
     .save-btn {
-        background: #4a90e2;
+        background: linear-gradient(135deg, #4a90e2 0%, #5e60ce 100%);
         border: none;
-        padding: 0.75rem 2rem;
+        padding: 1rem 2.5rem;
         font-weight: 600;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        font-size: 1.1rem;
+        border-radius: 12px;
+        transition: all 0.4s ease;
+        box-shadow: 0 8px 25px rgba(74, 144, 226, 0.35);
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .save-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: 0.5s;
     }
     
     .save-btn:hover {
-        background: #357abd;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(74, 144, 226, 0.45);
+    }
+    
+    .save-btn:hover::before {
+        left: 100%;
+    }
+    
+    .save-btn:active {
+        transform: translateY(1px);
+    }
+    
+    .group-badge {
+        background: #e0f2fe;
+        color: #0c4a6e;
+        font-weight: 600;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
     }
     
     @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(40px);
         }
         to {
             opacity: 1;
@@ -110,62 +252,118 @@
     }
     
     @keyframes popIn {
-        from {
-            transform: scale(0.8);
+        0% {
+            transform: scale(0.7);
             opacity: 0;
         }
-        to {
-            transform: scale(1);
+        70% {
+            transform: scale(1.1);
             opacity: 1;
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .rating-section {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .rating-controls {
+            order: 2;
+        }
+        
+        .rating-display {
+            order: 1;
+        }
+        
+        .profile-stats {
+            flex-direction: column;
+            gap: 1.5rem;
         }
     }
 </style>
 {% endblock %}
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="profile-card">
-                <div class="text-center mb-4">
-                    <i class="fas fa-user-circle fa-5x text-primary mb-3"></i>
-                    <h2 class="fw-bold">{{ student.username }}</h2>
-                    <p class="text-muted">Студент группы {{ group.group_name if group else 'Нет группы' }}</p>
-                </div>
-                
-                <form method="post" id="ratingForm" class="needs-validation" novalidate>
-                    <div class="form-group">
-                        <label for="ratingInput" class="form-label"><i class="fas fa-star text-warning me-2"></i>Рейтинг студента</label>
-                        <div class="rating-section">
-                            <button type="button" class="rating-btn" id="decrease" aria-label="Уменьшить рейтинг">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                            
-                            <input type="number" 
-                                   name="rating" 
-                                   id="ratingInput"
-                                   class="rating-input"
-                                   value="{{ rate or 0 }}"
-                                   min="0"
-                                   max="100"
-                                   required>
-                                   
-                            <div class="rating-display" id="ratingDisplay">{{ rate or 0 }}</div>
-                            
-                            <button type="button" class="rating-btn" id="increase" aria-label="Увеличить рейтинг">
-                                <i class="fas fa-plus"></i>
-                            </button>
+<div class="profile-container">
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="avatar-container">
+                            <i class="fas fa-user-graduate"></i>
                         </div>
-                        <div class="invalid-feedback">
-                            Пожалуйста, введите значение от 0 до 100
+                        <h1 class="fw-bold display-5 mb-2">{{ student.username }}</h1>
+                        <div class="group-badge">
+                            <i class="fas fa-users"></i>
+                            {{ group.group_name if group else 'Не состоит в группе' }}
                         </div>
                     </div>
                     
-                    <div class="d-grid">
-                        <button type="submit" class="save-btn btn btn-primary mt-3">
-                            <i class="fas fa-save me-2"></i>Сохранить изменения
-                        </button>
+                    <div class="profile-content">
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">24</div>
+                                <div class="stat-label">Курса пройдено</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">87%</div>
+                                <div class="stat-label">Успеваемость</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">156</div>
+                                <div class="stat-label">Часов обучения</div>
+                            </div>
+                        </div>
+                        
+                        <form method="post" id="ratingForm" class="needs-validation" novalidate>
+                            <div class="form-group">
+                                <label for="ratingInput" class="form-label fs-5 fw-bold mb-3">
+                                    <i class="fas fa-star me-2" style="color: #FFD700;"></i>Установите рейтинг студента
+                                </label>
+                                
+                                <div class="rating-section">
+                                    <div class="rating-controls">
+                                        <button type="button" class="rating-btn" id="decrease" aria-label="Уменьшить рейтинг">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        
+                                        <input type="number" 
+                                               name="rating" 
+                                               id="ratingInput"
+                                               class="rating-input"
+                                               value="{{ rate or 0 }}"
+                                               min="0"
+                                               max="100"
+                                               required>
+                                               
+                                        <button type="button" class="rating-btn" id="increase" aria-label="Увеличить рейтинг">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="position-relative">
+                                        <div class="rating-display" id="ratingDisplay">{{ rate or 0 }}</div>
+                                        <div class="rating-label">Текущий рейтинг</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="invalid-feedback mt-2">
+                                    Пожалуйста, введите значение от 0 до 100
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="save-btn btn btn-primary btn-lg">
+                                    <i class="fas fa-save me-2"></i>Сохранить изменения
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -175,45 +373,54 @@
 {{ super() }}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const input = document.querySelector('.rating-input');
+        const input = document.getElementById('ratingInput');
         const display = document.getElementById('ratingDisplay');
         const decreaseBtn = document.getElementById('decrease');
         const increaseBtn = document.getElementById('increase');
+        const form = document.getElementById('ratingForm');
         
         // Обновление отображения рейтинга
         function updateDisplay(value) {
             display.textContent = value;
             display.style.animation = 'none';
             void display.offsetWidth; // Триггер перезапуска анимации
-            display.style.animation = 'popIn 0.3s ease';
+            display.style.animation = 'popIn 0.4s ease';
         }
         
         // Инициальное обновление
-        updateDisplay(parseInt(input.value) || 0);
+        updateDisplay(input.value);
         
-        // Обработчики для кнопок +/- 
+        // Обработчики для кнопок
         decreaseBtn.addEventListener('click', () => {
             let value = parseInt(input.value) || 0;
-            input.value = Math.max(0, value - 1);
-            updateDisplay(input.value);
+            if (value > 0) {
+                input.value = value - 1;
+                updateDisplay(input.value);
+                input.focus();
+            }
         });
         
         increaseBtn.addEventListener('click', () => {
             let value = parseInt(input.value) || 0;
-            input.value = Math.min(100, value + 1);
-            updateDisplay(input.value);
+            if (value < 100) {
+                input.value = value + 1;
+                updateDisplay(input.value);
+                input.focus();
+            }
         });
         
         // Валидация при ручном вводе
         input.addEventListener('input', () => {
             let value = parseInt(input.value) || 0;
-            if (value > 100) input.value = 100;
-            if (value < 0) input.value = 0;
-            updateDisplay(input.value);
+            if (isNaN(value)) value = 0;
+            if (value > 100) value = 100;
+            if (value < 0) value = 0;
+            input.value = value;
+            updateDisplay(value);
         });
         
         // Валидация формы
-        document.querySelector('form').addEventListener('submit', function (event) {
+        form.addEventListener('submit', function (event) {
             if (!this.checkValidity()) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -221,29 +428,5 @@
             this.classList.add('was-validated');
         });
     });
-</script>
-
-<!-- Toast уведомление -->
-<script>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                const toast = document.createElement('div');
-                toast.className = 'toast align-items-center text-bg-{{ category if category != "error" else "danger" }} border-0 position-fixed bottom-0 end-0 m-3';
-                toast.innerHTML = `
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            {{ message }}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                `;
-                document.body.appendChild(toast);
-                
-                const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
-                bsToast.show();
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
 </script>
 {% endblock %}

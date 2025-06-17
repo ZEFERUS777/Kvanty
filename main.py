@@ -284,7 +284,17 @@ def profile():
         return render_template("profile.html", user=current_user, group=group, autorized=True, rule="admin")
     else:
         return render_template("profile.html", user=current_user, group=group, autorized=True)
-
+    
+    
+@app.route("/group_rate/<int:id>")
+@login_required
+def group_rate(id):
+    if id != current_user.group_id:
+        flash("У вас нет прав для просмотра этого рейтинга", "error")
+        return redirect(url_for("index"))
+    group = Groups.query.get_or_404(id)
+    students = Users.query.filter_by(group_id=id, rule=0).order_by(Users.group_rate).all()
+    return render_template("rate_list.html", students=students, group=group, autorized=True, user=current_user)
 
 with app.app_context():
     db.create_all()

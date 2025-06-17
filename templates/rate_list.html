@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% block title %}Рейтинг группы - {{ group.name }}{% endblock %}
+
+{% block styles %}
+<style>
+    /* Основные стили */
+    .rating-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .rating-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .group-name {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4f46e5;
+        margin-bottom: 0.5rem;
+    }
+
+    .rating-title {
+        font-size: 1.25rem;
+        color: #6b7280;
+    }
+
+    /* Стили таблицы */
+    .rating-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.75rem;
+    }
+
+    .rating-table th {
+        text-align: left;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: #4b5563;
+        background-color: #f9fafb;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .rating-table td {
+        padding: 1.25rem 1.5rem;
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+        transition: all 0.3s ease;
+    }
+
+    .rating-table tr:hover td {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -2px rgba(0,0,0,0.05);
+    }
+
+    /* Анимации строк */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .rating-table tbody tr {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+    }
+
+    .rating-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+    .rating-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+    .rating-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+    .rating-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+    .rating-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+    .rating-table tbody tr:nth-child(6) { animation-delay: 0.6s; }
+    .rating-table tbody tr:nth-child(7) { animation-delay: 0.7s; }
+    .rating-table tbody tr:nth-child(8) { animation-delay: 0.8s; }
+    .rating-table tbody tr:nth-child(9) { animation-delay: 0.9s; }
+    .rating-table tbody tr:nth-child(10) { animation-delay: 1.0s; }
+
+    /* Стили для позиций */
+    .position-cell {
+        display: flex;
+        align-items: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #4b5563;
+    }
+
+    .position-badge {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .position-1 .position-badge { background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%); }
+    .position-2 .position-badge { background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%); }
+    .position-3 .position-badge { background: linear-gradient(135deg, #fbcfe8 0%, #f472b6 100%); }
+    .position-other .position-badge { background-color: #e5e7eb; }
+
+    /* Стили рейтинга */
+    .rating-value {
+        font-weight: 700;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .rating-bar-container {
+        flex-grow: 1;
+        height: 8px;
+        background-color: #e5e7eb;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-left: 1rem;
+    }
+
+    .rating-bar {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 1s ease-out;
+    }
+
+    .position-1 .rating-bar { background: linear-gradient(90deg, #fcd34d, #f59e0b); }
+    .position-2 .rating-bar { background: linear-gradient(90deg, #d1d5db, #9ca3af); }
+    .position-3 .rating-bar { background: linear-gradient(90deg, #fbcfe8, #f472b6); }
+    .position-other .rating-bar { background: linear-gradient(90deg, #93c5fd, #3b82f6); }
+
+    /* Стили для топ-3 */
+    .top-student {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .top-student::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+
+    .position-1::before { background: linear-gradient(to bottom, #fcd34d, #f59e0b); }
+    .position-2::before { background: linear-gradient(to bottom, #d1d5db, #9ca3af); }
+    .position-3::before { background: linear-gradient(to bottom, #fbcfe8, #f472b6); }
+
+    /* Медальки для топ-3 */
+    .medal {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 40px;
+        height: 40px;
+        background: #f59e0b;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        transform: rotate(25deg);
+        box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3);
+    }
+
+    .position-1 .medal { background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%); }
+    .position-2 .medal { background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%); }
+    .position-3 .medal { background: linear-gradient(135deg, #fbcfe8 0%, #f472b6 100%); }
+
+    /* Анимация медалей */
+    @keyframes pulse {
+        0% { transform: rotate(25deg) scale(1); }
+        50% { transform: rotate(25deg) scale(1.1); }
+        100% { transform: rotate(25deg) scale(1); }
+    }
+
+    .medal {
+        animation: pulse 2s infinite ease-in-out;
+    }
+
+    .position-1 .medal { animation-delay: 0.2s; }
+    .position-2 .medal { animation-delay: 0.4s; }
+    .position-3 .medal { animation-delay: 0.6s; }
+
+    /* Пустое состояние */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #e5e7eb;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #9ca3af;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rating-container">
+    <div class="rating-header">
+        <h1 class="group-name">{{ group.name }}</h1>
+        <p class="rating-title">Рейтинг успеваемости студентов</p>
+    </div>
+
+    {% if students %}
+    <table class="rating-table">
+        <thead>
+            <tr>
+                <th style="width: 10%;">Позиция</th>
+                <th>Студент</th>
+                <th style="width: 30%;">Рейтинг</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students | reverse %}
+            {% set position_class = 'position-other' %}
+            {% if loop.index == 1 %}{% set position_class = 'position-1' %}{% endif %}
+            {% if loop.index == 2 %}{% set position_class = 'position-2' %}{% endif %}
+            {% if loop.index == 3 %}{% set position_class = 'position-3' %}{% endif %}
+            
+            <tr class="top-student {{ position_class }}">
+                <td>
+                    <div class="position-cell">
+                        <div class="position-badge">{{ loop.index }}</div>
+                    </div>
+                </td>
+                <td>
+                    {% if user.id == group.lead_id %}
+                    <div style="font-weight: 600; font-size: 1.1rem;"><a href="/student/{{ student.id }}">{{ student.username }}</a></div>
+                    {% else %}
+                    <div style="font-weight: 600; font-size: 1.1rem;">{{ student.username }}</div>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="rating-value">
+                        {{ student.group_rate }} из 100
+                        <div class="rating-bar-container">
+                            <div class="rating-bar" style="width: {{ student.group_rate }}%;"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            
+            {% if loop.index <= 3 %}
+            <div class="medal">
+                {% if loop.index == 1 %}<i class="fas fa-trophy"></i>{% endif %}
+                {% if loop.index == 2 %}<i class="fas fa-medal"></i>{% endif %}
+                {% if loop.index == 3 %}<i class="fas fa-award"></i>{% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-chart-line"></i>
+        <h3>Рейтинг пока не сформирован</h3>
+        <p>У студентов этой группы пока нет оценок для построения рейтинга</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Анимация прогресс-баров
+        const ratingBars = document.querySelectorAll('.rating-bar');
+        ratingBars.forEach(bar => {
+            // Сохраняем оригинальную ширину
+            const originalWidth = bar.style.width;
+            // Сбрасываем ширину для анимации
+            bar.style.width = '0';
+            
+            // Запускаем анимацию после небольшой задержки
+            setTimeout(() => {
+                bar.style.width = originalWidth;
+            }, 300);
+        });
+        
+        // Плавное появление контейнера
+        const container = document.querySelector('.rating-container');
+        container.style.opacity = '0';
+        container.style.transform = 'translateY(20px)';
+        container.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        
+        setTimeout(() => {
+            container.style.opacity = '1';
+            container.style.transform = 'translateY(0)';
+        }, 100);
+        
+        // Анимация при наведении на строки
+        const tableRows = document.querySelectorAll('.rating-table tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.zIndex = '10';
+            });
+            
+            row.addEventListener('mouseleave', () => {
+                row.style.zIndex = '1';
+            });
+        });
+    });
+</script>
+{% endblock %}
