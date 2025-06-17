@@ -83,7 +83,7 @@ def group_detail(id):
     group = Groups.query.get_or_404(id)
     users = Users.query.all()
     students = Users.query.filter_by(group_id=id, rule=0).all()
-    
+
     if current_user.id != group.lead_id:
         flash("Вы не являетесь руководителем этой группы", "error")
         return redirect(url_for("groups"))
@@ -128,6 +128,9 @@ def load_user(user_id):
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        flash("Вы уже авторизованы", "info")
+        return redirect(url_for("index"))
     login_form = LoginForm()
     if request.method == "POST":
         email = login_form.email.data
@@ -154,6 +157,9 @@ def logout():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    if current_user.is_authenticated:
+        flash("Вы уже авторизованы", "info")
+        return redirect(url_for("index"))
     form = RegistrationForm()
     if request.method == "POST":
         name = form.name.data
@@ -167,7 +173,7 @@ def register():
             if Users.query.filter_by(username=user_login).first():
                 return render_template("register.html", form=form, error="Пользователь с таким логином уже существует")
             new_user = Users(username=user_login, email=email,
-                            rule=0, group_rate=0)
+                             rule=0, group_rate=0)
             new_user.set_password(password)
             db.session.add(new_user)
             db.session.commit()
@@ -284,8 +290,8 @@ def profile():
         return render_template("profile.html", user=current_user, group=group, autorized=True, rule="admin")
     else:
         return render_template("profile.html", user=current_user, group=group, autorized=True)
-    
-    
+
+
 @app.route("/group_rate/<int:id>")
 @login_required
 def group_rate(id):
@@ -293,8 +299,10 @@ def group_rate(id):
         flash("У вас нет прав для просмотра этого рейтинга", "error")
         return redirect(url_for("index"))
     group = Groups.query.get_or_404(id)
-    students = Users.query.filter_by(group_id=id, rule=0).order_by(Users.group_rate).all()
+    students = Users.query.filter_by(
+        group_id=id, rule=0).order_by(Users.group_rate).all()
     return render_template("rate_list.html", students=students, group=group, autorized=True, user=current_user)
+
 
 with app.app_context():
     db.create_all()
