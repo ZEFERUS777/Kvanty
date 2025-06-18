@@ -13,6 +13,18 @@
 .student-card:hover {
     transform: translateY(-5px);
 }
+/* Убираем синий цвет и подчеркивание у ссылок */
+.student-link {
+    color: inherit;
+    text-decoration: none;
+}
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
 </style>
 {% endblock %}
 
@@ -46,23 +58,33 @@
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Студенты</h5>
-                    <section>
-                    {% if user and user.lead_group == group.id %}
-                    <button class="btn btn-light btn-sm" data-bs-target="#addStudentModal">
-                        <i class="fas fa-user-plus me-1"></i><a href="/grau/{{ group.id }}">Записаться</a>
-                    </button>
-                    {% endif %}
-                    {% if user and user.group_id == group.id %}
-                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
-                        <i class="fas fa-user-plus me-1"></i><a href="/group_rate/{{ group.id }}">Таблица рейтинга</a>
-                    </button>
-                    {% endif %}
-                    </section>
-                    {% if lead %}
-                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
-                        <i class="fas fa-user-plus me-1"></i><a href="/set_lead/{{ group.id }}">Назначить лидера</a>
-                    </button>
-                    {% endif %}
+                    <div class="d-flex gap-2">
+                        {% if user and user.lead_group == group.id %}
+                        <!-- Кнопка добавления домашнего задания -->
+                        <a href="/addtask/{{ group.id }}" class="btn btn-light btn-sm d-flex align-items-center">
+                            <i class="fas fa-book-medical me-1"></i>Добавить ДЗ
+                        </a>
+                        
+                        <!-- Кнопка записи студента -->
+                        <a href="/grau/{{ group.id }}" class="btn btn-light btn-sm btn-icon" title="Записать студента">
+                            <i class="fas fa-user-plus"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if user and user.group_id == group.id %}
+                        <!-- Кнопка таблицы рейтинга -->
+                        <a href="/group_rate/{{ group.id }}" class="btn btn-light btn-sm btn-icon" title="Таблица рейтинга">
+                            <i class="fas fa-chart-line"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if lead %}
+                        <!-- Кнопка назначения лидера -->
+                        <a href="/set_lead/{{ group.id }}" class="btn btn-light btn-sm btn-icon" title="Назначить лидера">
+                            <i class="fas fa-crown"></i>
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="card-body">
                     {% if group.Students %}
@@ -73,9 +95,17 @@
                                         <div class="card student-card h-100">
                                             <div class="card-body">
                                                 {% if user.lead_group == group.id %}
-                                                <h6 class="card-title mb-0"><a href="/student/{{ student.id }}">{{ student.username }}</a></h6>
+                                                <h6 class="card-title mb-0">
+                                                    <a class="student-link" href="/student/{{ student.id }}">
+                                                        <i class="fas fa-user-graduate me-2 text-muted"></i>
+                                                        {{ student.username }}
+                                                    </a>
+                                                </h6>
                                                 {% else %}
-                                                <h6 class="card-title mb-0">{{ student.username }}</h6>
+                                                <h6 class="card-title mb-0">
+                                                    <i class="fas fa-user-graduate me-2 text-muted"></i>
+                                                    {{ student.username }}
+                                                </h6>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -84,7 +114,10 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <p class="text-muted">В группе пока нет студентов</p>
+                        <div class="text-center py-4">
+                            <i class="fas fa-users-slash fa-2x text-muted mb-3"></i>
+                            <p class="text-muted">В группе пока нет студентов</p>
+                        </div>
                     {% endif %}
                 </div>
             </div>

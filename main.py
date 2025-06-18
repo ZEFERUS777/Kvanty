@@ -321,9 +321,9 @@ def addtask(id):
             db.session.add(new_task)
             db.session.commit()
             flash("Задание успешно добавлено", "success")
-            return redirect(url_for("addtask", id=id))
+            return redirect(url_for("group", id=id))
         except Exception:
-            return redirect(url_for("addtask", id=id))
+            return redirect(url_for("group", id=id))
     return render_template("addtask.html", group=group, form=form, autorized=True)
 
 
