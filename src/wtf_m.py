@@ -1,4 +1,4 @@
-from wtforms import StringField, SubmitField, PasswordField, EmailField, BooleanField, validators, FieldList
+from wtforms import StringField, SubmitField, PasswordField, EmailField, BooleanField, validators, TextAreaField
 from flask_wtf import FlaskForm
 
 
@@ -37,5 +37,11 @@ class RegistrationForm(FlaskForm):
     email = StringField('Введите ваш email:', validators=[
                         validators.DataRequired()])
     password = PasswordField('Введите ваш пароль:', validators=[
-                             validators.DataRequired()])
-    
+                             validators.DataRequired(), validators.length(min=8, message="Пароль слишком короткий")])
+
+
+class homeWorkForm(FlaskForm):
+    task_name = StringField('Название задания:', validators=[
+                            validators.DataRequired()])
+    task = TextAreaField('Задание:', validators=[validators.DataRequired()])
+    sub = SubmitField('Записаться')

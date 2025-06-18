@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
-from src.models import db, Groups, Students, Users
-from src.wtf_m import Add_Group_Form, Add_Student_Form, LoginForm, RegistrationForm
+from src.models import db, Groups, Students, Users, Home_Work
+from src.wtf_m import Add_Group_Form, Add_Student_Form, LoginForm, RegistrationForm, homeWorkForm
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -273,6 +274,7 @@ def student(id):
             student.group_rate = rat
             db.session.commit()
             flash("Оценка успешно обновлена", "success")
+            return redirect(url_for("group_rate", id=id))
         except ValueError:
             flash("Некорректное значение оценки", "error")
 
@@ -302,6 +304,27 @@ def group_rate(id):
     students = Users.query.filter_by(
         group_id=id, rule=0).order_by(Users.group_rate).all()
     return render_template("rate_list.html", students=students, group=group, autorized=True, user=current_user)
+
+
+@app.route("/addtask/<int:id>", methods=["GET", "POST"])
+@login_required
+def addtask(id):
+    form = homeWorkForm()
+    group = Groups.query.filter_by(id=id).first()
+    if current_user.lead_group != id:
+        flash("У вас нет прав для создания задания", "error")
+        return redirect(url_for("index"))
+    if request.method == "POST":
+        try:
+            new_task = Home_Work(work_name=form.task_name.data, task=form.task.data,
+                                date=datetime.now(), group_id=id)
+            db.session.add(new_task)
+            db.session.commit()
+            flash("Задание успешно добавлено", "success")
+            return redirect(url_for("addtask", id=id))
+        except Exception:
+            return redirect(url_for("addtask", id=id))
+    return render_template("addtask.html", group=group, form=form, autorized=True)
 
 
 with app.app_context():
