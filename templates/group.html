@@ -1,4 +1,3 @@
-<!-- templates/group.html -->
 {% extends "base.html" %}
 
 {% block title %}
@@ -24,6 +23,27 @@
     justify-content: center;
     width: 32px;
     height: 32px;
+}
+
+/* Новые стили для карточек заданий */
+.task-card {
+    transition: all 0.3s;
+    border-left: 3px solid #0d6efd;
+    margin-bottom: 1rem;
+}
+.task-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+.text-truncate {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.task-date {
+    font-size: 0.85rem;
+    color: #6c757d;
 }
 </style>
 {% endblock %}
@@ -54,6 +74,7 @@
     </div>
 
     <div class="row g-4">
+        <!-- Колонка со студентами -->
         <div class="col-md-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -87,7 +108,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    {% if group.Students %}
+                    {% if students %}
                         <div class="row g-3">
                             {% for student in students %}
                                 {% if student %}
@@ -118,6 +139,47 @@
                             <i class="fas fa-users-slash fa-2x text-muted mb-3"></i>
                             <p class="text-muted">В группе пока нет студентов</p>
                         </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Колонка с домашними заданиями -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Домашние задания</h5>
+                    {% if user and user.lead_group == group.id %}
+                    <a href="/addtask/{{ group.id }}" class="btn btn-light btn-sm btn-icon" title="Добавить задание">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if tasks %}
+                    <div class="d-grid gap-3">
+                        {% for task in tasks %}
+                        <div class="card task-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title mb-1">{{ task.work_name }}</h5>
+                                    <span class="task-date">{{ task.date.strftime('%d.%m.%Y') }}</span>
+                                </div>
+                                {% if task.task %}
+                                <p class="card-text mb-2 text-truncate">{{ task.task }}</p>
+                                {% else %}
+                                <p class="card-text mb-2 text-muted">Описание отсутствует</p>
+                                {% endif %}
+                                <a href="/task/{{ task.id }}" class="btn btn-sm btn-outline-primary">Подробнее</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-book fa-2x text-muted mb-3"></i>
+                        <p class="text-muted">Нет активных заданий</p>
+                    </div>
                     {% endif %}
                 </div>
             </div>

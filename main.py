@@ -60,9 +60,10 @@ def add_group():
 def group(id):
     group = Groups.query.get(int(id))
     lead = group.lead_id
+    tasks = Home_Work.query.filter_by(group_id=id).order_by(Home_Work.date.desc()).all()
     students = Users.query.filter_by(group_id=id, rule=0).all()
     if not lead and current_user.rule == 1:
-        return render_template("group.html", group=group, lead=True, autorized=True)
+        return render_template("group.html", group=group, lead=True, autorized=True, tasks=tasks)
     if request.method == "POST":
         student_name = request.form.get("student_name")
         students = Users.query.filter_by(username=student_name).all()
@@ -74,7 +75,7 @@ def group(id):
         db.session.commit()
         flash("Вы записались", "success")
     return render_template("group.html", group=group, user=current_user, students=students,
-                           autorized=True)
+                           autorized=True, tasks=tasks)
 
 
 # функция для для записи ученика в группу
