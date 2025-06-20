@@ -202,7 +202,7 @@
             {% endif %}
             
             <form method="POST" id="loginForm">
-                {{ form.hidden_tag() }}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 
                 <div class="form-group">
                     <i class="fas fa-envelope input-icon"></i>

@@ -165,6 +165,7 @@
 {% block content %}
 <div class="form-container">
     <form method="POST" id="groupForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <h1 class="form-title">Добавить группу</h1>
         
         <div class="form-group">

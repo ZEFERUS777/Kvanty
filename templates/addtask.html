@@ -1,262 +1,291 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Добавить задание - {{ group.name }}
+Добавить задание - {{ group.name }}
 {% endblock %}
 
 {% block styles %}
-    {{ super() }}
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <style>
-        :root {
-            --primary: #4e73df;
-            --primary-dark: #2e59d9;
-            --secondary: #6c757d;
-            --light: #f8f9fc;
-            --success: #1cc88a;
-            --danger: #e74a3b;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-            min-height: 100vh;
-            font-family: 'Nunito', sans-serif;
-        }
-        
-        .task-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            padding: 40px;
-            margin-top: 30px;
+{{ super() }}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<style>
+    :root {
+        --primary: #4e73df;
+        --primary-dark: #2e59d9;
+        --secondary: #6c757d;
+        --light: #f8f9fc;
+        --success: #1cc88a;
+        --danger: #e74a3b;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+        min-height: 100vh;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    .task-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        margin-top: 30px;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeUp 0.6s forwards 0.3s;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .task-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary), var(--success));
+    }
+
+    @keyframes fadeUp {
+        from {
             transform: translateY(20px);
             opacity: 0;
-            animation: fadeUp 0.6s forwards 0.3s;
-            border: none;
-            position: relative;
-            overflow: hidden;
         }
-        
-        .task-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary), var(--success));
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
         }
-        
-        @keyframes fadeUp {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        .form-header {
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-            position: relative;
-        }
-        
-        .form-header i {
-            color: var(--primary);
-            background: rgba(78, 115, 223, 0.1);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        .form-header:hover i {
-            transform: rotate(15deg) scale(1.1);
-            background: var(--primary);
-            color: white;
-        }
-        
-        .form-control {
-            border: 2px solid #e1e5eb;
-            border-radius: 8px;
-            padding: 15px 20px 15px 50px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: none !important;
-            height: auto;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25) !important;
-        }
-        
-        .input-group-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--secondary);
-            z-index: 10;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
-        
-        .form-group:focus-within .input-group-icon {
-            color: var(--primary);
-            transform: translateY(-50%) scale(1.1);
-        }
-        
-        .form-group {
-            position: relative;
-            margin-bottom: 30px;
-            animation: fadeIn 0.5s forwards;
+    }
+
+    .form-header {
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .form-header i {
+        color: var(--primary);
+        background: rgba(78, 115, 223, 0.1);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-header:hover i {
+        transform: rotate(15deg) scale(1.1);
+        background: var(--primary);
+        color: white;
+    }
+
+    .form-control {
+        border: 2px solid #e1e5eb;
+        border-radius: 8px;
+        padding: 15px 20px 15px 50px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: none !important;
+        height: auto;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25) !important;
+    }
+
+    .input-group-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--secondary);
+        z-index: 10;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-group:focus-within .input-group-icon {
+        color: var(--primary);
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .form-group {
+        position: relative;
+        margin-bottom: 30px;
+        animation: fadeIn 0.5s forwards;
+        opacity: 0;
+    }
+
+    .form-group:nth-child(1) {
+        animation-delay: 0.4s;
+    }
+
+    .form-group:nth-child(2) {
+        animation-delay: 0.5s;
+    }
+
+    .form-group:nth-child(3) {
+        animation-delay: 0.6s;
+    }
+
+    @keyframes fadeIn {
+        from {
             opacity: 0;
+            transform: translateX(-10px);
         }
-        
-        .form-group:nth-child(1) { animation-delay: 0.4s; }
-        .form-group:nth-child(2) { animation-delay: 0.5s; }
-        .form-group:nth-child(3) { animation-delay: 0.6s; }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
         }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border: none;
-            border-radius: 50px;
-            padding: 15px 30px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(78, 115, 223, 0.4);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border: none;
+        border-radius: 50px;
+        padding: 15px 30px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(78, 115, 223, 0.4);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(78, 115, 223, 0.6);
+    }
+
+    .btn-primary:active {
+        transform: translateY(-1px);
+    }
+
+    .btn-primary i {
+        margin-left: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    .btn-primary:hover i {
+        transform: translateX(5px);
+    }
+
+    .btn-primary::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: 0.5s;
+    }
+
+    .btn-primary:hover::after {
+        left: 100%;
+    }
+
+    .alert {
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        animation: fadeInDown 0.5s ease;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
         }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(78, 115, 223, 0.6);
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
-        
-        .btn-primary:active {
-            transform: translateY(-1px);
+    }
+
+    .close {
+        transition: all 0.3s ease;
+    }
+
+    .close:hover {
+        transform: rotate(90deg);
+    }
+
+    .group-badge {
+        background: rgba(78, 115, 223, 0.1);
+        color: var(--primary);
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .group-badge i {
+        margin-right: 8px;
+        font-size: 0.9rem;
+    }
+
+    .form-control.is-invalid {
+        border-color: var(--danger);
+        padding-right: 2.25rem;
+        background-image: none;
+    }
+
+    .invalid-feedback {
+        animation: shake 0.5s ease;
+        font-weight: 600;
+    }
+
+    @keyframes shake {
+
+        0%,
+        100% {
+            transform: translateX(0);
         }
-        
-        .btn-primary i {
-            margin-left: 8px;
-            transition: transform 0.3s ease;
+
+        20%,
+        60% {
+            transform: translateX(-5px);
         }
-        
-        .btn-primary:hover i {
+
+        40%,
+        80% {
             transform: translateX(5px);
         }
-        
-        .btn-primary::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: 0.5s;
-        }
-        
-        .btn-primary:hover::after {
-            left: 100%;
-        }
-        
-        .alert {
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            animation: fadeInDown 0.5s ease;
-        }
-        
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .close {
-            transition: all 0.3s ease;
-        }
-        
-        .close:hover {
-            transform: rotate(90deg);
-        }
-        
-        .group-badge {
-            background: rgba(78, 115, 223, 0.1);
-            color: var(--primary);
-            padding: 5px 15px;
-            border-radius: 50px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-        }
-        
-        .group-badge i {
-            margin-right: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .form-control.is-invalid {
-            border-color: var(--danger);
-            padding-right: 2.25rem;
-            background-image: none;
-        }
-        
-        .invalid-feedback {
-            animation: shake 0.5s ease;
-            font-weight: 600;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-5px); }
-            40%, 80% { transform: translateX(5px); }
-        }
-        
-        .floating-icon {
-            position: absolute;
-            opacity: 0.05;
-            font-size: 8rem;
-            z-index: 0;
-        }
-        
-        .floating-icon-1 {
-            top: 30px;
-            right: 30px;
-            color: var(--primary);
-        }
-        
-        .floating-icon-2 {
-            bottom: 30px;
-            left: 30px;
-            color: var(--success);
-            transform: rotate(-30deg);
-        }
-    </style>
+    }
+
+    .floating-icon {
+        position: absolute;
+        opacity: 0.05;
+        font-size: 8rem;
+        z-index: 0;
+    }
+
+    .floating-icon-1 {
+        top: 30px;
+        right: 30px;
+        color: var(--primary);
+    }
+
+    .floating-icon-2 {
+        bottom: 30px;
+        left: 30px;
+        color: var(--success);
+        transform: rotate(-30deg);
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -267,7 +296,7 @@
                 <!-- Плавающие декоративные иконки -->
                 <i class="fas fa-file-alt floating-icon floating-icon-1"></i>
                 <i class="fas fa-tasks floating-icon floating-icon-2"></i>
-                
+
                 <!-- Заголовок с названием группы -->
                 <div class="form-header">
                     <h2 class="h4 text-gray-900 mb-0">
@@ -277,40 +306,41 @@
                         Для группы: <span class="group-badge"><i class="fas fa-users"></i> {{ group.group_name }}</span>
                     </h3>
                 </div>
-                
+
                 <!-- Flash сообщения -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
-                                <i class="fas {{ 'fa-times-circle' if category == 'error' else 'fa-check-circle' }} me-2"></i>
-                                {{ message }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show"
+                    role="alert">
+                    <i class="fas {{ 'fa-times-circle' if category == 'error' else 'fa-check-circle' }} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+                {% endif %}
                 {% endwith %}
 
                 <!-- Форма добавления задания -->
                 <form method="POST" action="{{ url_for('addtask', id=group.id) }}" id="taskForm">
-                    {{ form.hidden_tag() }}
-                    
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <!-- Поле: Название задания -->
                     <div class="form-group">
                         <span class="input-group-icon">
                             <i class="fas fa-heading"></i>
                         </span>
                         {{ form.task_name.label(class="form-control-label font-weight-bold") }}
-                        {{ form.task_name(class="form-control form-control-lg", placeholder="Введите название задания") }}
+                        {{ form.task_name(class="form-control form-control-lg", placeholder="Введите название задания")
+                        }}
                         {% if form.task_name.errors %}
-                            <div class="invalid-feedback d-block">
-                                <i class="fas fa-exclamation-circle me-2"></i>
-                                {% for error in form.task_name.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
+                        <div class="invalid-feedback d-block">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            {% for error in form.task_name.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
                         {% endif %}
                     </div>
 
@@ -322,12 +352,12 @@
                         {{ form.task.label(class="form-control-label font-weight-bold") }}
                         {{ form.task(class="form-control", rows=8, placeholder="Подробно опишите задание...") }}
                         {% if form.task.errors %}
-                            <div class="invalid-feedback d-block">
-                                <i class="fas fa-exclamation-circle me-2"></i>
-                                {% for error in form.task.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
+                        <div class="invalid-feedback d-block">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            {% for error in form.task.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
                         {% endif %}
                     </div>
 
@@ -345,46 +375,46 @@
 {% endblock %}
 
 {% block scripts %}
-    {{ super() }}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Добавляем классы is-invalid при наличии ошибок
-            {% if form.task_name.errors %}
-                document.getElementById('{{ form.task_name.id }}').classList.add('is-invalid');
-            {% endif %}
-            
-            {% if form.task.errors %}
-                document.getElementById('{{ form.task.id }}').classList.add('is-invalid');
-            {% endif %}
-            
-            // Анимация кнопки при наведении
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.addEventListener('mouseenter', function() {
-                this.classList.add('animate__pulse');
-            });
-            
-            submitBtn.addEventListener('mouseleave', function() {
-                this.classList.remove('animate__pulse');
-            });
-            
-            // Анимация отправки формы
-            const form = document.getElementById('taskForm');
-            form.addEventListener('submit', function(e) {
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Создание...';
-                submitBtn.classList.add('animate__pulse');
-                submitBtn.disabled = true;
-            });
-            
-            // Анимация для иконок в заголовке
-            const headerIcon = document.querySelector('.form-header i');
-            headerIcon.addEventListener('mouseenter', function() {
-                this.classList.add('animate__swing');
-            });
-            
-            headerIcon.addEventListener('mouseleave', function() {
-                this.classList.remove('animate__swing');
-            });
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Добавляем классы is-invalid при наличии ошибок
+        {% if form.task_name.errors %}
+        document.getElementById('{{ form.task_name.id }}').classList.add('is-invalid');
+        {% endif %}
+
+        {% if form.task.errors %}
+        document.getElementById('{{ form.task.id }}').classList.add('is-invalid');
+        {% endif %}
+
+        // Анимация кнопки при наведении
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.addEventListener('mouseenter', function () {
+            this.classList.add('animate__pulse');
         });
-    </script>
+
+        submitBtn.addEventListener('mouseleave', function () {
+            this.classList.remove('animate__pulse');
+        });
+
+        // Анимация отправки формы
+        const form = document.getElementById('taskForm');
+        form.addEventListener('submit', function (e) {
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Создание...';
+            submitBtn.classList.add('animate__pulse');
+            submitBtn.disabled = true;
+        });
+
+        // Анимация для иконок в заголовке
+        const headerIcon = document.querySelector('.form-header i');
+        headerIcon.addEventListener('mouseenter', function () {
+            this.classList.add('animate__swing');
+        });
+
+        headerIcon.addEventListener('mouseleave', function () {
+            this.classList.remove('animate__swing');
+        });
+    });
+</script>
 {% endblock %}

@@ -3,9 +3,11 @@ from src.models import db, Groups, Students, Users, Home_Work
 from src.wtf_m import Add_Group_Form, Add_Student_Form, LoginForm, RegistrationForm, homeWorkForm
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from datetime import datetime
+from flask_wtf.csrf import CSRFProtect
 
 
 app = Flask(__name__)
+csrf = CSRFProtect(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///kvant.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "sapperboy"
@@ -60,7 +62,8 @@ def add_group():
 def group(id):
     group = Groups.query.get(int(id))
     lead = group.lead_id
-    tasks = Home_Work.query.filter_by(group_id=id).order_by(Home_Work.date.desc()).all()
+    tasks = Home_Work.query.filter_by(
+        group_id=id).order_by(Home_Work.date.desc()).all()
     students = Users.query.filter_by(group_id=id, rule=0).all()
     if not lead and current_user.rule == 1:
         return render_template("group.html", group=group, lead=True, autorized=True, tasks=tasks)
@@ -318,7 +321,7 @@ def addtask(id):
     if request.method == "POST":
         try:
             new_task = Home_Work(work_name=form.task_name.data, task=form.task.data,
-                                date=datetime.now(), group_id=id)
+                                 date=datetime.now(), group_id=id)
             db.session.add(new_task)
             db.session.commit()
             flash("Задание успешно добавлено", "success")
@@ -335,23 +338,23 @@ def task(id):
     if not homework:
         flash("Задание не найдено", "danger")
         return redirect(url_for("index"))
-    
+
     # Получаем группу задания
     group = Groups.query.get_or_404(homework.group_id)
     if not group:
         flash("Группа задания не найдена", "danger")
         return redirect(url_for("index"))
-    
+
     # Проверяем доступ пользователя
     user_in_group = current_user.group_id == group.id
     is_leader = current_user.lead_group == group.id
-    
+
     if not (user_in_group or is_leader):
         flash("У вас нет доступа к этому заданию", "danger")
         return redirect(url_for("index"))
-    
+
     return render_template(
-        "task.html", 
+        "task.html",
         homework=homework,
         group=group,
         user=current_user,
@@ -373,12 +376,12 @@ def delete_task(id):
     if not current_user.lead_group == group.id:
         flash("У вас нет прав для удаления задания", "error")
         return redirect(url_for("groups"))
-    
+
     db.session.delete(task)
     db.session.commit()
     flash("Задание успешно удалено", "success")
     return redirect(url_for("group", id=group.id))
-    
+
 
 with app.app_context():
     db.create_all()

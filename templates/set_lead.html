@@ -26,8 +26,7 @@
                 
                 <div class="card-body">
                     <form method="post">
-
-                        
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="mb-3">
                             <label class="form-label">Выберите преподавателя:</label>
                             <select id="teacher-select" class="form-select" name="lead_id" required>

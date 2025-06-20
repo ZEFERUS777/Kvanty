@@ -320,6 +320,7 @@
                         </div>
                         
                         <form method="post" id="ratingForm" class="needs-validation" novalidate>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <div class="form-group">
                                 <label for="ratingInput" class="form-label fs-5 fw-bold mb-3">
                                     <i class="fas fa-star me-2" style="color: #FFD700;"></i>Установите рейтинг студента

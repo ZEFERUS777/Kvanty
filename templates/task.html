@@ -99,6 +99,7 @@
                 </div>
                 <div class="card-body">
                     <form method="POST" action="/submit_homework/{{ homework.id }}" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="mb-3">
                             <label for="solution" class="form-label">Ваше решение</label>
                             <textarea class="form-control" id="solution" name="solution" rows="4" required></textarea>
