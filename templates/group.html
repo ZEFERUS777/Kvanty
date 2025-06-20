@@ -144,6 +144,7 @@
             </div>
         </div>
         
+        {% if user and user.group_id == group.id %}
         <!-- Колонка с домашними заданиями -->
         <div class="col-md-4">
             <div class="card shadow-sm">
@@ -170,7 +171,13 @@
                                 {% else %}
                                 <p class="card-text mb-2 text-muted">Описание отсутствует</p>
                                 {% endif %}
-                                <a href="/task/{{ task.id }}" class="btn btn-sm btn-outline-primary">Подробнее</a>
+                                <div class="d-flex">
+                                    <a href="/task/{{ task.id }}" class="btn btn-sm btn-outline-primary" style="margin-right: 150px;">Подробнее</a>
+                                    {% if user and user.lead_group == group.id %}
+                                    <a href="/delete/task/{{ task.id }}" class="btn btn-sm btn-danger">удалить</a>
+                                    {% endif %}
+                                </div>
+                                
                             </div>
                         </div>
                         {% endfor %}
@@ -184,6 +191,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

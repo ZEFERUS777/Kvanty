@@ -193,7 +193,7 @@ def set_lead(id):
         return redirect(url_for("groups"))
 
     group = Groups.query.get_or_404(id)
-    users = Users.query.filter_by(rule=3).all()
+    users = Users.query.filter_by(rule=3, group_id=None).all()
 
     if request.method == "POST":
         new_lead_id = request.form.get("lead_id")
@@ -327,6 +327,58 @@ def addtask(id):
             return redirect(url_for("group", id=id))
     return render_template("addtask.html", group=group, form=form, autorized=True)
 
+
+@app.route("/task/<string:id>")
+@login_required
+def task(id):
+    homework = Home_Work.query.get_or_404(int(id))
+    if not homework:
+        flash("Задание не найдено", "danger")
+        return redirect(url_for("index"))
+    
+    # Получаем группу задания
+    group = Groups.query.get_or_404(homework.group_id)
+    if not group:
+        flash("Группа задания не найдена", "danger")
+        return redirect(url_for("index"))
+    
+    # Проверяем доступ пользователя
+    user_in_group = current_user.group_id == group.id
+    is_leader = current_user.lead_group == group.id
+    
+    if not (user_in_group or is_leader):
+        flash("У вас нет доступа к этому заданию", "danger")
+        return redirect(url_for("index"))
+    
+    return render_template(
+        "task.html", 
+        homework=homework,
+        group=group,
+        user=current_user,
+        is_leader=is_leader
+    )
+
+
+@app.route("/delete/task/<int:id>")
+@login_required
+def delete_task(id):
+    task = Home_Work.query.get_or_404(id)
+    if not task:
+        flash("Задание не найдено", "danger")
+        return redirect(url_for("groups"))
+    group = Groups.query.get_or_404(task.group_id)
+    if not group:
+        flash("Группа задания не найдена", "danger")
+        return redirect(url_for("groups"))
+    if not current_user.lead_group == group.id:
+        flash("У вас нет прав для удаления задания", "error")
+        return redirect(url_for("groups"))
+    
+    db.session.delete(task)
+    db.session.commit()
+    flash("Задание успешно удалено", "success")
+    return redirect(url_for("group", id=group.id))
+    
 
 with app.app_context():
     db.create_all()

@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ homework.work_name }} - {{ group.group_name }} - Технопарк
+{% endblock %}
+
+{% block styles %}
+<style>
+.task-header {
+    border-bottom: 2px solid #0d6efd;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+.task-content {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+.task-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.5rem;
+}
+.task-meta {
+    background-color: #e9ecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+.task-meta-item {
+    display: flex;
+    margin-bottom: 0.8rem;
+}
+.task-meta-label {
+    font-weight: 600;
+    min-width: 140px;
+    color: #495057;
+}
+.task-meta-value {
+    color: #212529;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Главная</a></li>
+            <li class="breadcrumb-item"><a href="/group/{{ group.id }}">{{ group.group_name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ homework.work_name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Заголовок задания -->
+    <div class="task-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="display-6 fw-bold">{{ homework.work_name }}</h1>
+            {% if is_leader %}
+            <div class="task-actions">
+                <a href="/edit_task/{{ homework.id }}" class="btn btn-outline-primary">
+                    <i class="fas fa-edit me-1"></i>Редактировать
+                </a>
+                <form action="/delete/task/{{ homework.id }}" method="GET">
+                    <button type="submit" class="btn btn-outline-danger" 
+                            onclick="return confirm('Вы уверены, что хотите удалить это задание?')">
+                        <i class="fas fa-trash-alt me-1"></i>Удалить
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        <div class="text-muted mt-2">
+            <i class="fas fa-calendar-alt me-1"></i>
+            Опубликовано: {{ homework.date.strftime('%d.%m.%Y в %H:%M') }}
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Основное содержимое задания -->
+        <div class="col-lg-8">
+            <div class="task-content">
+                {% if homework.task %}
+                    {{ homework.task | safe }}
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Описание задания отсутствует
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Блок для сдачи задания (для студентов) -->
+            {% if user.rule == 0 %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Сдать задание</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/submit_homework/{{ homework.id }}" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="solution" class="form-label">Ваше решение</label>
+                            <textarea class="form-control" id="solution" name="solution" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="attachment" class="form-label">Прикрепить файл (опционально)</label>
+                            <input class="form-control" type="file" id="attachment" name="attachment">
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-paper-plane me-1"></i>Отправить решение
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Боковая панель с мета-информацией -->
+        <div class="col-lg-4">
+            <div class="task-meta">
+                <h5 class="fw-bold mb-4">Информация о задании</h5>
+                
+                <div class="task-meta-item">
+                    <span class="task-meta-label">Группа:</span>
+                    <span class="task-meta-value">
+                        <a href="/group/{{ group.id }}">{{ group.group_name }}</a>
+                    </span>
+                </div>
+                
+                <div class="task-meta-item">
+                    <span class="task-meta-label">Преподаватель:</span>
+                    <span class="task-meta-value">{{ group.tuitor }}</span>
+                </div>
+                
+                <div class="task-meta-item">
+                    <span class="task-meta-label">Статус:</span>
+                    <span class="task-meta-value">
+                        {% if user.rule == 0 %}
+                            {% if homework_submitted %}
+                                <span class="badge bg-success">Сдано</span>
+                            {% else %}
+                                <span class="badge bg-warning">Ожидает сдачи</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="badge bg-primary">Активно</span>
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="task-meta-item">
+                    <span class="task-meta-label">Срок сдачи:</span>
+                    <span class="task-meta-value">
+                        {% if homework.deadline %}
+                            {{ homework.deadline.strftime('%d.%m.%Y в %H:%M') }}
+                        {% else %}
+                            Не установлен
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="task-meta-item">
+                    <span class="task-meta-label">Сдано работ:</span>
+                    <span class="task-meta-value">
+                        {{ submissions_count }} из {{ students_count }}
+                    </span>
+                </div>
+                
+                {% if is_leader %}
+                <div class="mt-4 pt-3 border-top">
+                    <a href="/submissions/{{ homework.id }}" class="btn btn-sm btn-outline-primary w-100">
+                        <i class="fas fa-list-check me-1"></i>Просмотреть сданные работы
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
