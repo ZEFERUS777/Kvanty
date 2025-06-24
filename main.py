@@ -4,13 +4,16 @@ from src.wtf_m import Add_Group_Form, Add_Student_Form, LoginForm, RegistrationF
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from datetime import datetime
 from flask_wtf.csrf import CSRFProtect
+from dotenv import load_dotenv
+import os
 
+load_dotenv("spec.env")
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///kvant.sqlite3"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATA_BASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SECRET_KEY"] = "sapperboy"
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
