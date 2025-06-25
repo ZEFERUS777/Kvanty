@@ -63,7 +63,7 @@ def add_group():
 @app.route("/group/<string:id>", methods=["GET", "POST"])
 @login_required
 def group(id):
-    group = Groups.query.get(int(id))
+    group = Groups.query.get_or_404(int(id))
     lead = group.lead_id
     tasks = Home_Work.query.filter_by(
         group_id=id).order_by(Home_Work.date.desc()).all()
@@ -384,6 +384,23 @@ def delete_task(id):
     db.session.commit()
     flash("Задание успешно удалено", "success")
     return redirect(url_for("group", id=group.id))
+
+
+@app.route("/delete/student/<int:id>")
+def delete_student(id):
+    try:
+        user = Users.query.get_or_404(id)
+        group = Groups.query.filter_by(id=user.group_id).first()
+        if current_user.lead_group != group.id:
+            flash("У вас нет прав для удаления студента", "error")
+            return redirect(url_for("groups"))
+        user.group_id = None
+        user.group_rate = 0
+        db.session.commit()
+        return redirect(url_for("group", id=group.id))
+    except Exception:
+        return render_template("error.html", error="Ошибка удаления студента")
+    
 
 
 with app.app_context():

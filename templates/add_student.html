@@ -210,9 +210,12 @@
                                     <h5 class="mb-0">{{ student.username }}</h5>
                                 </div>
                                 <div class="student-actions">
+                                    <a href="/delete/student/{{ student.id }}">
                                     <button class="btn btn-sm btn-outline-danger remove-student" data-student="{{ student }}">
                                         <i class="fas fa-times"></i> Удалить
                                     </button>
+                                    </a>
+                              
                                 </div>
                             </div>
                         {% endfor %}
@@ -276,7 +279,7 @@
     });
 
     // Обработка удаления студента
-    document.querySelectorAll('.remove-student').forEach(btn => {
+    <!-- document.querySelectorAll('.remove-student').forEach(btn => {
         btn.addEventListener('click', function() {
             const studentName = this.dataset.student;
             if (confirm(`Вы уверены, что хотите удалить ${studentName} из группы?`)) {
@@ -285,7 +288,7 @@
                 alert(`Студент ${studentName} будет удален после реализации функционала`);
             }
         });
-    });
+    }); -->
 
     // Валидация при изменении выбора
     document.getElementById('student-select').addEventListener('change', function() {
