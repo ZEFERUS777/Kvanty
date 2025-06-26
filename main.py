@@ -89,7 +89,7 @@ def group(id):
 @login_required
 def group_detail(id):
     group = Groups.query.get_or_404(id)
-    users = Users.query.all()
+    users = Users.query.filter_by(group_id=None).all()
     students = Users.query.filter_by(group_id=id, rule=0).all()
 
     if current_user.id != group.lead_id:
@@ -400,7 +400,6 @@ def delete_student(id):
         return redirect(url_for("group", id=group.id))
     except Exception:
         return render_template("error.html", error="Ошибка удаления студента")
-    
 
 
 with app.app_context():
