@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ошибка | Страница не найдена</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Анимация градиента фона */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Контейнер контента */
+        .error-container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            max-width: 800px;
+            width: 90%;
+            z-index: 10;
+            position: relative;
+            transform: translateY(0);
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(-20px);
+            }
+        }
+        
+        /* Анимированный код ошибки */
+        .error-code {
+            font-size: 12rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b, #ff416c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: pulse 2s infinite, glitch 5s infinite;
+            position: relative;
+            text-shadow: 0 0 10px rgba(255, 65, 108, 0.3);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes glitch {
+            0%, 100% { text-shadow: 0 0 10px rgba(255, 65, 108, 0.5); }
+            5% { text-shadow: -5px -5px 0 rgba(0, 255, 255, 0.7), 5px 5px 0 rgba(255, 0, 255, 0.7); }
+            10% { text-shadow: none; }
+        }
+        
+        /* Заголовок */
+        .error-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #e6e6e6;
+            animation: fadeIn 1.5s ease forwards;
+        }
+        
+        /* Сообщение */
+        .error-message {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            color: #c4c4c4;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeIn 2s ease forwards;
+        }
+        
+        /* Кнопка */
+        .home-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 2.5s ease forwards;
+        }
+        
+        .home-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 75, 43, 0.6);
+        }
+        
+        .home-button:active {
+            transform: translateY(0);
+        }
+        
+        .home-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+        
+        .home-button:hover::before {
+            left: 100%;
+        }
+        
+        /* Иконка */
+        .error-icon {
+            font-size: 5rem;
+            margin-bottom: 30px;
+            color: #ff416c;
+            animation: bounce 2s infinite, rotate 8s infinite linear;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Пузырьки фона */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2);
+            animation: float linear infinite;
+            z-index: 1;
+        }
+        
+        @keyframes float {
+            to { transform: translateY(-100vh) rotate(360deg); }
+        }
+        
+        /* Анимация появления элементов */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .error-code { font-size: 8rem; }
+            .error-title { font-size: 2rem; }
+            .error-message { font-size: 1.1rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .error-code { font-size: 6rem; }
+            .error-title { font-size: 1.7rem; }
+            .home-button { padding: 12px 30px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Пузырьки фона будут созданы через JS -->
+    
+    <div class="error-container">
+        <i class="fas fa-exclamation-triangle error-icon"></i>
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">Упс! Страница не найдена</h2>
+        <p class="error-message">
+            Похоже, вы попали на страницу, которой не существует. Возможно, она была перемещена, удалена или вы просто ошиблись в адресе.
+        </p>
+        <a href="{{ url_for('index') }}" class="home-button">
+            <i class="fas fa-home"></i> Вернуться на главную
+        </a>
+    </div>
+
+    <script>
+        // Создаем пузырьки для фона
+        function createBubbles() {
+            const bubbleCount = 20;
+            const body = document.body;
+            
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+                
+                // Случайные параметры
+                const size = Math.random() * 120 + 30;
+                const posX = Math.random() * window.innerWidth;
+                const duration = Math.random() * 30 + 20;
+                const delay = Math.random() * 5;
+                const opacity = Math.random() * 0.2 + 0.05;
+                
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${posX}px`;
+                bubble.style.bottom = `-${size}px`;
+                bubble.style.opacity = opacity;
+                bubble.style.animationDuration = `${duration}s`;
+                bubble.style.animationDelay = `${delay}s`;
+                
+                body.appendChild(bubble);
+            }
+        }
+        
+        // Анимация для кнопки при наведении
+        function setupButtonEffect() {
+            const button = document.querySelector('.home-button');
+            
+            button.addEventListener('mouseenter', () => {
+                button.style.transform = 'translateY(-5px)';
+                button.style.boxShadow = '0 10px 25px rgba(255, 75, 43, 0.6)';
+            });
+            
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'translateY(0)';
+                button.style.boxShadow = '0 5px 15px rgba(255, 75, 43, 0.4)';
+            });
+        }
+        
+        // Анимация ошибки
+        function animateErrorCode() {
+            const errorCode = document.querySelector('.error-code');
+            
+            setInterval(() => {
+                errorCode.style.textShadow = '0 0 15px rgba(255, 65, 108, 0.7)';
+                setTimeout(() => {
+                    errorCode.style.textShadow = '0 0 10px rgba(255, 65, 108, 0.3)';
+                }, 300);
+            }, 5000);
+        }
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            createBubbles();
+            setupButtonEffect();
+            animateErrorCode();
+            
+            // Добавляем эффект при клике на кнопку
+            document.querySelector('.home-button').addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Анимация кнопки при клике
+                const button = e.target.closest('.home-button');
+                button.style.transform = 'scale(0.95)';
+                
+                setTimeout(() => {
+                    button.style.transform = '';
+                    alert('Переход на главную страницу...');
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>
