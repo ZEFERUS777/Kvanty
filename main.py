@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
-from src.models import db, Groups, Students, Users, Home_Work
+from src.models import db, Groups, Students, Users, Home_Work, Works
 from src.wtf_m import Add_Group_Form, Add_Student_Form, LoginForm, RegistrationForm, homeWorkForm
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from datetime import datetime
@@ -334,7 +334,7 @@ def addtask(id):
     return render_template("addtask.html", group=group, form=form, autorized=True)
 
 
-@app.route("/task/<string:id>")
+@app.route("/task/<string:id>", methods=["GET", "POST"])
 @login_required
 def task(id):
     homework = Home_Work.query.get_or_404(int(id))
@@ -344,6 +344,7 @@ def task(id):
 
     # Получаем группу задания
     group = Groups.query.get_or_404(homework.group_id)
+    aprov = Works.query.filter_by(homework_name=homework.work_name, user_id=current_user.id).first()
     if not group:
         flash("Группа задания не найдена", "danger")
         return redirect(url_for("index"))
@@ -351,17 +352,31 @@ def task(id):
     # Проверяем доступ пользователя
     user_in_group = current_user.group_id == group.id
     is_leader = current_user.lead_group == group.id
+    access = True if aprov else False
 
     if not (user_in_group or is_leader):
         flash("У вас нет доступа к этому заданию", "danger")
         return redirect(url_for("index"))
+
+    
+    if request.method == "POST":
+        text = request.form.get("solution")
+        user_id = current_user.id
+        group = Groups.query.filter_by(id=homework.group_id).first()
+        work = Works(user_id=user_id, group_id=group.id, work=text,
+                         add_date=datetime.now(), homework_name=homework.work_name)
+        db.session.add(work)
+        db.session.commit()
+        return redirect(url_for("task", id=homework.id))
 
     return render_template(
         "task.html",
         homework=homework,
         group=group,
         user=current_user,
-        is_leader=is_leader
+        is_leader=is_leader,
+        access=access,
+        aprev=aprov
     )
 
 
@@ -411,5 +426,4 @@ with app.app_context():
 
 
 if __name__ == "__main__":
-    print("Запуск сервера")
     app.run(debug=True)

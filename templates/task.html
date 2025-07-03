@@ -98,16 +98,16 @@
                     <h5 class="mb-0">Сдать задание</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="/submit_homework/{{ homework.id }}" enctype="multipart/form-data">
+                    <form method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="mb-3">
                             <label for="solution" class="form-label">Ваше решение</label>
-                            <textarea class="form-control" id="solution" name="solution" rows="4" required></textarea>
+                            <textarea class="form-control" id="solution" name="solution" rows="4" value="{{ aprev.work }}" required></textarea>
                         </div>
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label for="attachment" class="form-label">Прикрепить файл (опционально)</label>
                             <input class="form-control" type="file" id="attachment" name="attachment">
-                        </div>
+                        </div> -->
                         <button type="submit" class="btn btn-success">
                             <i class="fas fa-paper-plane me-1"></i>Отправить решение
                         </button>
@@ -138,7 +138,7 @@
                     <span class="task-meta-label">Статус:</span>
                     <span class="task-meta-value">
                         {% if user.rule == 0 %}
-                            {% if homework_submitted %}
+                            {% if access %}
                                 <span class="badge bg-success">Сдано</span>
                             {% else %}
                                 <span class="badge bg-warning">Ожидает сдачи</span>
