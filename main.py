@@ -424,7 +424,40 @@ def delete_student(id):
         return redirect(url_for("group", id=group.id))
     except Exception:
         return render_template("error.html", error="Ошибка удаления студента")
+    
 
+@app.route("/works/<int:id>")
+def works(id):
+    works = Works.query.filter_by(group_id=id).all()
+    group = Groups.query.get_or_404(id)
+    if not group or not current_user.lead_group == group.id:
+        return redirect(url_for("index"))
+    return render_template("works.html", works=works, group=group)
+
+
+@app.route("/work/<int:id>")
+def work_detail(id):
+    # Получаем решение по ID или 404
+    work = Works.query.get_or_404(id)
+    
+    # Получаем группу, к которой относится решение
+    group = Groups.query.get_or_404(work.group_id)
+    
+    # Проверяем права доступа (только лидер группы может просматривать)
+    if not group or not current_user.lead_group == group.id:
+        return redirect(url_for("index"))
+    
+    # Получаем связанные данные
+    student = Users.query.get(work.user_id)
+    homework = Home_Work.query.get(work.homework_name)
+    
+    return render_template(
+        "work_detail.html",
+        work=work,
+        group=group,
+        student=student,
+        homework=homework
+    )
 
 @app.errorhandler(404)
 def page_not_found(error):
