@@ -363,6 +363,15 @@ def task(id):
         text = request.form.get("solution")
         user_id = current_user.id
         group = Groups.query.filter_by(id=homework.group_id).first()
+        if Works.query.filter_by(user_id=user_id, homework_name=homework.work_name).first():
+            work = Works.query.filter_by(user_id=user_id, homework_name=homework.work_name).first()
+            if work.work == text:
+                flash("Вы уже отправляли это задание", "error")
+                return redirect(url_for("task", id=homework.id))
+            else:
+                work.work = text
+                db.session.commit()
+                flash("Задание успешно изменено", "success")
         work = Works(user_id=user_id, group_id=group.id, work=text,
                          add_date=datetime.now(), homework_name=homework.work_name)
         db.session.add(work)

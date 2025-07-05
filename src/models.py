@@ -55,7 +55,7 @@ class Home_Work(db.Model, SerializerMixin):
     task = db.Column(db.Text)
     date = db.Column(db.DateTime, default=datetime.utcnow())
     group_id = db.Column(db.Integer, db.ForeignKey("groups.id"))
-    
+
 
 class Works(db.Model, SerializerMixin):
     __tablename__ = "works"
