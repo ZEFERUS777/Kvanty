@@ -93,6 +93,7 @@
 
             <!-- Блок для сдачи задания (для студентов) -->
             {% if user.rule == 0 %}
+            {% if not aprev.Credited == 1 %}
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">Сдать задание</h5>
@@ -114,6 +115,7 @@
                     </form>
                 </div>
             </div>
+            {% endif %}
             {% endif %}
         </div>
 
@@ -138,8 +140,10 @@
                     <span class="task-meta-label">Статус:</span>
                     <span class="task-meta-value">
                         {% if user.rule == 0 %}
-                            {% if access %}
-                                <span class="badge bg-success">Сдано</span>
+                            {% if aprev.Credited == 1 %}
+                                <span class="badge bg-success">Зачтено</span>
+                            {% elif access %}
+                                <span class="badge bg-success">Ожидает проверки</span>
                             {% else %}
                                 <span class="badge bg-warning">Ожидает сдачи</span>
                             {% endif %}

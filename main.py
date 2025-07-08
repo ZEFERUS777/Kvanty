@@ -344,7 +344,7 @@ def task(id):
 
     # Получаем группу задания
     group = Groups.query.get_or_404(homework.group_id)
-    aprov = Works.query.filter_by(homework_name=homework.work_name, user_id=current_user.id).first()
+    aprov = Works.query.filter_by(homework_name=homework.work_name, user_id=current_user.id).order_by(Works.add_date).first()
     if not group:
         flash("Группа задания не найдена", "danger")
         return redirect(url_for("index"))
@@ -411,6 +411,7 @@ def delete_task(id):
 
 
 @app.route("/delete/student/<int:id>")
+@login_required
 def delete_student(id):
     try:
         user = Users.query.get_or_404(id)
@@ -427,15 +428,17 @@ def delete_student(id):
     
 
 @app.route("/works/<int:id>")
+@login_required
 def works(id):
-    works = Works.query.filter_by(group_id=id).all()
+    works = Works.query.filter_by(group_id=id, Credited=0).all()
     group = Groups.query.get_or_404(id)
     if not group or not current_user.lead_group == group.id:
         return redirect(url_for("index"))
-    return render_template("works.html", works=works, group=group)
+    return render_template("works.html", works=works, group=group, autorized=True)
 
 
 @app.route("/work/<int:id>")
+@login_required
 def work_detail(id):
     # Получаем решение по ID или 404
     work = Works.query.get_or_404(id)
@@ -456,9 +459,25 @@ def work_detail(id):
         work=work,
         group=group,
         student=student,
-        homework=homework
+        homework=homework, 
+        autorized=True
     )
-
+    
+    
+@app.route("/zachet/<int:id>")
+@login_required
+def zachet(id):
+    work = Works.query.get_or_404(id)
+    if current_user.lead_group != work.group_id:
+        return render_template("error.html", error="У вас нет прав для просмотра решения")
+    if work.Credited:
+        return redirect(url_for("index"))
+    work.Credited = 1
+    db.session.commit()
+    return redirect(url_for("group", id=work.group_id))
+    
+    
+    
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('error.html'), 404 

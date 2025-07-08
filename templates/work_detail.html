@@ -252,10 +252,13 @@
                 <i class="fas fa-arrow-left"></i>
                 Вернуться к списку
             </a>
-            <button class="action-btn grade-btn">
-                <i class="fas fa-check-circle"></i>
-                Оценить решение
-            </button>
+            <a href="/zachet/{{ work.id }}">\
+                <button class="action-btn grade-btn">
+                    <i class="fas fa-check-circle"></i>
+                    Зачесть решение
+                </button>
+            </a>
+
         </div>
     </div>
 {% endblock %}
@@ -306,12 +309,6 @@
                         btn.style.boxShadow = '0 5px 15px rgba(0, 176, 155, 0.3)';
                     }
                 });
-            });
-            
-            // Обработка нажатия на кнопку оценки
-            document.querySelector('.grade-btn').addEventListener('click', () => {
-                // Здесь будет логика оценки
-                alert('Функция оценки будет реализована в следующем обновлении!');
             });
         });
     </script>

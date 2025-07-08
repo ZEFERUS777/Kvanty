@@ -65,3 +65,4 @@ class Works(db.Model, SerializerMixin):
     work = db.Column(db.Text)
     add_date = db.Column(db.DateTime, default=datetime.utcnow())
     homework_name = db.Column(db.Integer, db.ForeignKey("homework.id"))
+    Credited = db.Column(db.Integer, default=0)
