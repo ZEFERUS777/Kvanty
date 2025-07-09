@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
 from src.models import db, Groups, Students, Users, Home_Work, Works
 from src.wtf_m import Add_Group_Form, Add_Student_Form, LoginForm, RegistrationForm, homeWorkForm
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
@@ -6,10 +6,18 @@ from datetime import datetime
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 import os
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from werkzeug.exceptions import TooManyRequests
+
 
 load_dotenv("spec.env")
 
 app = Flask(__name__)
+limiter = Limiter(get_remote_address,
+                   app=app,
+                   default_limits=["200 per day", "50 per hour"])
+
 csrf = CSRFProtect(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATA_BASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -135,6 +143,7 @@ def load_user(user_id):
 
 
 @app.route("/login", methods=["GET", "POST"])
+@limiter.limit("10/hour")
 def login():
     if current_user.is_authenticated:
         flash("Вы уже авторизованы", "info")
@@ -164,6 +173,7 @@ def logout():
 
 
 @app.route("/register", methods=["GET", "POST"])
+@limiter.limit("10/hour")
 def register():
     if current_user.is_authenticated:
         flash("Вы уже авторизованы", "info")
@@ -481,6 +491,185 @@ def zachet(id):
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('error.html'), 404 
+
+
+@app.errorhandler(TooManyRequests)
+def handle_429(error):
+    headers = error.get_headers()
+    retry_after = next((int(h[1]) for h in headers if h[0] == 'Retry-After'), 60)
+    return f"""
+    <!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Превышен лимит запросов</title>
+        <style>
+            * {{
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }}
+            
+            body {{
+                background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: white;
+            }}
+            
+            .container {{
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(10px);
+                border-radius: 20px;
+                padding: 40px;
+                max-width: 600px;
+                width: 90%;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }}
+            
+            h1 {{
+                color: #ff6b6b;
+                margin-bottom: 20px;
+                font-size: 2.5rem;
+            }}
+            
+            p {{
+                font-size: 1.2rem;
+                line-height: 1.6;
+                margin-bottom: 25px;
+            }}
+            
+            .timer {{
+                font-size: 4rem;
+                font-weight: bold;
+                background: linear-gradient(to right, #4facfe, #00f2fe);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin: 30px 0;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            }}
+            
+            .instructions {{
+                background: rgba(255, 255, 255, 0.1);
+                padding: 20px;
+                border-radius: 10px;
+                margin: 25px 0;
+                text-align: left;
+            }}
+            
+            .reload-btn {{
+                background: linear-gradient(to right, #00b09b, #96c93d);
+                color: white;
+                border: none;
+                padding: 15px 40px;
+                font-size: 1.1rem;
+                border-radius: 50px;
+                cursor: pointer;
+                margin-top: 20px;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            }}
+            
+            .reload-btn:hover {{
+                transform: translateY(-3px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            }}
+            
+            .reload-btn:active {{
+                transform: translateY(1px);
+            }}
+            
+            .logo {{
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }}
+            
+            .logo-icon {{
+                margin-right: 10px;
+                font-size: 2rem;
+            }}
+            
+            @media (max-width: 480px) {{
+                .container {{
+                    padding: 25px;
+                }}
+                
+                h1 {{
+                    font-size: 1.8rem;
+                }}
+                
+                .timer {{
+                    font-size: 3rem;
+                }}
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">⏱️</span>
+                <span>RateLimit Guard</span>
+            </div>
+            <h1>Превышен лимит запросов</h1>
+            <p>Вы отправили слишком много запросов за короткое время. Пожалуйста, подождите перед повторной попыткой.</p>
+            
+            <div class="instructions">
+                <p>✓ Не обновляйте страницу слишком часто</p>
+                <p>✓ Попробуйте повторить запрос через:</p>
+            </div>
+            
+            <div class="timer" id="timer">{retry_after}</div>
+            
+            <p>Автоматическое обновление страницы через: <span id="countdown">{retry_after}</span> сек.</p>
+            
+            <button class="reload-btn" onclick="window.location.reload()">
+                Обновить сейчас
+            </button>
+        </div>
+
+        <script>
+            // Таймер обратного отсчета
+            let seconds = {retry_after};
+            const timerEl = document.getElementById('timer');
+            const countdownEl = document.getElementById('countdown');
+            
+            function updateTimer() {{
+                seconds--;
+                timerEl.textContent = seconds;
+                countdownEl.textContent = seconds;
+                
+                if (seconds <= 0) {{
+                    clearInterval(timerInterval);
+                    window.location.reload();
+                }}
+            }}
+            
+            const timerInterval = setInterval(updateTimer, 1000);
+            
+            // Анимация таймера
+            let scale = 1;
+            let growing = false;
+            
+            setInterval(() => {{
+                timerEl.style.transform = `scale(${{scale}})`;
+                growing ? scale += 0.02 : scale -= 0.02;
+                
+                if (scale > 1.1) growing = false;
+                if (scale < 0.95) growing = true;
+            }}, 50);
+        </script>
+    </body>
+    </html>
+    """, 429
 
 with app.app_context():
     db.create_all()
